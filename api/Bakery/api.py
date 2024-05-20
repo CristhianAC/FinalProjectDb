@@ -1,15 +1,23 @@
+from django.shortcuts import get_object_or_404
 from .models import *
 from rest_framework import viewsets, permissions
 from .serializers import *
- 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
 class productoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = ProductoSerializer
-
-
+    @action(detail=False, methods=['delete'])
+    def eliminar(self, request):
+        idp = request.query_params['idp']
+        Prroducto = get_object_or_404(Producto, idp=idp)
+        Prroducto.delete()
+        return Response(status=status.HTTP_200_OK)
 class caracteristicasPedidoViewSet(viewsets.ModelViewSet):
     queryset = CaracteristicasPedido.objects.all()
     permission_classes = [
@@ -86,10 +94,10 @@ class disponibilidadViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = DisponibilidadSerializer
-
 class medioTranspViewSet(viewsets.ModelViewSet):
     queryset = MedioTransp.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = MedioTranspSerializer
+

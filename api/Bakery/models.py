@@ -1,12 +1,22 @@
 from django.db import models
 from django.forms import ValidationError
+from django.db import models
 
-# Create your models here.
+def validate_day(value):
+    if value < 1 or value > 31:
+        raise ValidationError(f'{value} no es un día válido. Debe estar entre 1 y 31.')
+def validate_month(value):
+    if value < 1 or value > 12:
+        raise ValidationError(f'{value} no es un mes válido. Debe estar entre 1 y 12.')
+def validate_positive(value):
+    if value < 0:
+        raise ValidationError(f'{value} no es un valor válido. Debe ser positivo.')
+
 class Producto(models.Model):
-    idp = models.CharField(max_length=100, primary_key=True)
+    idp = models.AutoField(primary_key=True)
     Categoria = models.CharField(max_length=100)
     nomProducto = models.CharField(max_length=100)
-    precio = models.FloatField()
+    precio = models.FloatField(validators=[validate_positive])
     Descrip = models.CharField(max_length=400)
 class CaracteristicasPedido(models.Model):
     idp = models.OneToOneField(Producto, on_delete=models.CASCADE)
@@ -14,7 +24,7 @@ class CaracteristicasPedido(models.Model):
     cantidad = models.IntegerField()
     precio = models.FloatField()
 class Usuario(models.Model):
-    idU = models.CharField(max_length=100, primary_key=True)
+    idU = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=100)
@@ -23,7 +33,7 @@ class Administrador(models.Model):
 class Cliente(models.Model):
     idC = models.OneToOneField(Usuario, on_delete=models.CASCADE)
 class Pedido(models.Model):
-    idPedido = models.CharField(max_length=100, primary_key=True)
+    idPedido = models.AutoField(primary_key=True)
     idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     estadoPedido = models.CharField(max_length=100)
     fecha = models.DateField()
@@ -34,14 +44,6 @@ class DireccionEntrega(models.Model):
     codigoDireccion = models.CharField(max_length=100, primary_key=True)
     idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=100)
-
-def validate_day(value):
-    if value < 1 or value > 31:
-        raise ValidationError(f'{value} no es un día válido. Debe estar entre 1 y 31.')
-def validate_month(value):
-    if value < 1 or value > 12:
-        raise ValidationError(f'{value} no es un mes válido. Debe estar entre 1 y 12.')
-
 class Fecha(models.Model):
     idFecha = models.CharField(max_length=100, primary_key=True)
     dia = models.IntegerField(validators=[validate_day])
@@ -50,12 +52,12 @@ class Fecha(models.Model):
     hInicio = models.TimeField()
     hFinal = models.TimeField()
 class Repartidor(models.Model):
-    idr = models.CharField(max_length=100, primary_key=True)
+    idr = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=100)
 class Entrega(models.Model):
-    codigoEntrega = models.CharField(max_length=100, primary_key=True)
+    codigoEntrega = models.AutoField(primary_key=True)
     idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     idPedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
     Direccion = models.ForeignKey(DireccionEntrega, on_delete=models.CASCADE)

@@ -1,0 +1,60 @@
+body {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #310e11;
+    color: #F7F3E9;
+}
+
+/* espacio de texto en pantalla */
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* info */
+.features {
+    background-color: #ebf7f1;
+    color: #3B3026;
+    padding: 2rem 20px; 
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+}
+
+.features .feature {
+    display: inline-block;
+    width: 30%;
+    padding: 1rem;
+    vertical-align: top;
+    text-align: center; 
+}
+
+.features .feature img {
+    max-width: 50px;
+    margin-bottom: 1rem;
+    padding-top: 30px;
+    display: block;      
+    margin-left: auto;   
+    margin-right: auto;  
+}
+
+.features .feature h4 {
+    font-size: 1.1em;  
+    font-weight: bold; 
+    margin: 0.5rem 0;
+    padding-top: 0.8em;
+}
+
+.features .feature p {
+    font-size: 0.9em;  
+    font-weight: normal; 
+    margin: 0.5rem 0;  
+}
+
+footer {
+    background-color: #310e11;
+    color: #ebf7f1;
+    padding: 1rem 0;
+    text-align: center;
+}

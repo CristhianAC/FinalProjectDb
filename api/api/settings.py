@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bakerydbfinalproject',
+        'NAME': 'BakeryDB',
         'USER': 'avnadmin',
         'PASSWORD': 'AVNS_badsMwGKvFllQDmX0Fo',
         'HOST': 'quillasbakery-cristhianholad-ae91.k.aivencloud.com',

@@ -3,63 +3,63 @@ from .models import *
 
 class ProductoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Producto
+        model = producto
         fields = '__all__'
 class CaracteristicasPedidoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CaracteristicasPedido
+        model = caracteristicaspedido
         fields = '__all__'
-        read_only_fields = ['idp', 'IdPedido', 'precio', 'cantidad']
+        read_only_fields = ['idp', 'idpedido', 'precio', 'cantidad']
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cliente
+        model = cliente
         fields = '__all__'
         read_only_fields = ['idC']
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Pedido
+        model = pedido
         fields = '__all__'
-        read_only_fields = ['idPedido', 'idc', 'estadoPedido', 'fecha']
+        read_only_fields = ['idPedido', 'idc', 'estadopedido', 'fecha']
 class TelefonoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Telefono
+        model = telefono
         fields = '__all__'
         read_only_fields = ['idc']
 class DireccionEntregaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DireccionEntrega
+        model = direccionentrega
         fields = '__all__'
-        read_only_fields = ['codigoDireccion', 'idc']
+        read_only_fields = ['codigodireccion', 'idc']
 class FechaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Fecha
+        model = fecha
         fields = '__all__'
-        read_only_fields = ['idFecha', 'dia', 'mes', 'anio', 'hInicio', 'hFinal']
+        read_only_fields = ['idfecha', 'dia', 'mes', 'anio', 'hinicio', 'hfinal']
 class RepartidorSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = Repartidor
+        model = repartidor
         fields = '__all__'
         read_only_fields = ['idr']
 class EntregaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Entrega
+        model = entrega
         fields = '__all__'
-        read_only_fields = ['codigoEntrega', 'idc', 'idPedido', 'Direccion', 'idr', 'Fecha']
+        read_only_fields = ['codigoentrega', 'idc', 'idpedido', 'direccion', 'idr', 'fecha']
 class DisponibilidadSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Disponibilidad
+        model = disponibilidad
         fields = '__all__'
         read_only_fields = ['idr', 'diasDisp', 'horasDisp']
 class MedioTranspSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MedioTransp
+        model = mediotransp
         fields = '__all__'
         read_only_fields = ['idr']
 class colaRepartidorSerializer(serializers.ModelSerializer):
     idr = RepartidorSerializer()
     class Meta:
-        model = colaRepartidor
+        model = colarepartidor
         fields = '__all__'
         read_only_fields = ['idr', 'hora']
 

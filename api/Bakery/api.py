@@ -12,6 +12,7 @@ class productoViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = ProductoSerializer
+    #http://127.0.0.1:8000/api/api/producto/eliminar/
     @action(detail=False, methods=['delete'])
     def eliminar(self, request):
         idp = request.query_params['idp']
@@ -84,6 +85,7 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = colaRepartidorSerializer
+    #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
     @action(detail=True, methods=['post'])
     def agregar(self, request, pk=None):
         repartidor_id = request.query_params['idr']
@@ -93,6 +95,7 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+    #http://127.0.0.1:8000/api/api/colarepartidor/agregar/eliminar/
     @action(detail=True, methods=['delete'])
     def eliminar(self, request, pk=None):
         idr = request.query_params['idr']

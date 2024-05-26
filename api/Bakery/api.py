@@ -24,70 +24,48 @@ class caracteristicasPedidoViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = CaracteristicasPedidoSerializer
-
-class usuarioViewSet(viewsets.ModelViewSet):
-    queryset = Usuario.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = UsuarioSerializer
-
-class administradorViewSet(viewsets.ModelViewSet):  
-    queryset = Administrador.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = AdministradorSerializer
-
 class clienteViewSet(viewsets.ModelViewSet):
     queryset = Cliente.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = ClienteSerializer
-
 class pedidoViewSet(viewsets.ModelViewSet):
     queryset = Pedido.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = PedidoSerializer
-
 class telefonoViewSet(viewsets.ModelViewSet):
     queryset = Telefono.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = TelefonoSerializer
-
 class direccionEntregaViewSet(viewsets.ModelViewSet):
     queryset = DireccionEntrega.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = DireccionEntregaSerializer
-
 class fechaViewSet(viewsets.ModelViewSet):
     queryset = Fecha.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = FechaSerializer
-
 class repartidorViewSet(viewsets.ModelViewSet):
     queryset = Repartidor.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = RepartidorSerializer
-
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = Entrega.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = EntregaSerializer
-
 class disponibilidadViewSet(viewsets.ModelViewSet):
     queryset = Disponibilidad.objects.all()
     permission_classes = [
@@ -100,4 +78,15 @@ class medioTranspViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = MedioTranspSerializer
-
+class colaRepartidorViewSet(viewsets.ModelViewSet):
+    queryset = colaRepartidor.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = colaRepartidorSerializer
+    @action(detail=True, methods=['post'])
+    def agregar(self, request, pk=None):
+        repartidor_id = request.query_params['idr']
+        repartidor = Repartidor.objects.get(idr=repartidor_id)
+        cola = colaRepartidor.objects.create(idr=repartidor)
+        return Response(status=status.HTTP_200_OK)

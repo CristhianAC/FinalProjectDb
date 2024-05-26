@@ -17,32 +17,28 @@ class Producto(models.Model):
     Categoria = models.CharField(max_length=100)
     nomProducto = models.CharField(max_length=100)
     precio = models.FloatField(validators=[validate_positive])
-    Descrip = models.CharField(max_length=400)
+    Descrip = models.TextField()
 class CaracteristicasPedido(models.Model):
     idp = models.OneToOneField(Producto, on_delete=models.CASCADE)
     IdPedido = models.CharField(max_length=100)
     cantidad = models.IntegerField()
     precio = models.FloatField()
-class Usuario(models.Model):
-    idU = models.AutoField(primary_key=True)
+class Cliente(models.Model):
+    idC = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=100)
-class Administrador(models.Model):
-    idAdmin = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-class Cliente(models.Model):
-    idC = models.OneToOneField(Usuario, on_delete=models.CASCADE)
 class Pedido(models.Model):
     idPedido = models.AutoField(primary_key=True)
-    idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idC = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     estadoPedido = models.CharField(max_length=100)
     fecha = models.DateField()
 class Telefono(models.Model):
     Numero = models.CharField(max_length=100, primary_key=True)
-    idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)    
+    idC = models.ForeignKey(Cliente, on_delete=models.CASCADE)    
 class DireccionEntrega(models.Model):
     codigoDireccion = models.CharField(max_length=100, primary_key=True)
-    idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idC = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=100)
 class Fecha(models.Model):
     idFecha = models.CharField(max_length=100, primary_key=True)
@@ -58,7 +54,7 @@ class Repartidor(models.Model):
     telefono = models.CharField(max_length=100)
 class Entrega(models.Model):
     codigoEntrega = models.AutoField(primary_key=True)
-    idc = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idC = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     idPedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
     Direccion = models.ForeignKey(DireccionEntrega, on_delete=models.CASCADE)
     idr = models.ForeignKey(Repartidor, on_delete=models.CASCADE)
@@ -72,3 +68,6 @@ class MedioTransp(models.Model):
     vehiculo = models.CharField(max_length=100)
     fechaVenci = models.DateField()
     licencia = models.CharField(max_length=100)
+class colaRepartidor(models.Model):
+    idr = models.ForeignKey(Repartidor, on_delete=models.CASCADE)
+    hora = models.TimeField(auto_now_add=True)

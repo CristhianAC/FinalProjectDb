@@ -14,20 +14,17 @@ def validate_positive(value):
 
 class producto(models.Model):
     idp = models.AutoField(primary_key=True)
-    categoria = models.CharField(max_length=100)
+    categoria = models.CharField(max_length=100, default='')
     nomproducto = models.CharField(max_length=100)
     precio = models.FloatField(validators=[validate_positive])
-    descrip = models.TextField()
-class caracteristicaspedido(models.Model):
-    idp = models.OneToOneField(producto, on_delete=models.CASCADE)
-    idpedido = models.CharField(max_length=100)
-    cantidad = models.IntegerField()
-    precio = models.FloatField()
+    descrip = models.TextField(default='')
+    imagen = models.URLField(default='')
 class cliente(models.Model):
-    idc = models.AutoField(primary_key=True)
+    idc = models.TextField(primary_key=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=100)
+    admin = models.BooleanField(default=False)
 class pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
@@ -37,9 +34,8 @@ class telefono(models.Model):
     Numero = models.CharField(max_length=100, primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)    
 class direccionentrega(models.Model):
-    codigodireccion = models.CharField(max_length=100, primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
-    direccion = models.CharField(max_length=100)
+    direccion = models.CharField(max_length=100, primary_key=True)
 class fecha(models.Model):
     idfecha = models.CharField(max_length=100, primary_key=True)
     dia = models.IntegerField(validators=[validate_day])
@@ -71,3 +67,9 @@ class mediotransp(models.Model):
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
     hora = models.TimeField(auto_now_add=True)
+class carrito(models.Model):
+    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
+class itemcarrito(models.Model):
+    idcarrito = models.ForeignKey(carrito, on_delete=models.CASCADE)
+    idproducto = models.ForeignKey(producto, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()

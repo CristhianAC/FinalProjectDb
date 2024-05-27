@@ -8,5 +8,10 @@ import auth from "auth-astro";
 export default defineConfig({
   output: 'server',
   integrations: [tailwind(), react(), auth()],
-  adapter: cloudflare()
+  adapter: cloudflare({
+    platformProxy: {
+      enabled: true
+    }
+  })
+  
 });

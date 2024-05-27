@@ -94,30 +94,24 @@ footer {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: 0.3s;
     font-family: "Montserrat", sans-serif;
-    ;
+ 
 }
 
 .producto:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.producto img {
-    max-width: 100%;
-    border-bottom: 1px solid #310e11;
-    margin-bottom: 1rem;
-}
 
 .producto h4 {
     padding-top: 1.5rem;
     font-size: 1em;  
     font-weight: bold; 
-    margin: 0.5rem 0; 
     font-family: "Montserrat", sans-serif;
 }
 
 .producto p {
     font-size: 1em;  
-    margin: 0.5rem 0; 
+    
 }
 
 .btn {
@@ -135,7 +129,7 @@ footer {
     color: #ebf7f1;
     padding: 1rem 2rem;
     text-decoration: none;
-    border-radius: 3px;
+   
     display: inline-block;
     margin-top: 1rem;
     font-family: "Montserrat", sans-serif;

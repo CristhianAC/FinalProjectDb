@@ -3,6 +3,9 @@
 ---
 
 <div class="hero animate-zoom-in">
+    <div class="background-image" style="background-image: url('../assets/fondopan.jpg');"></div>
+    <div class="background-image" style="background-image: url('../assets/baguettes.jpg');"></div>
+    <div class="background-image" style="background-image: url('../assets/donuts.jpg');"></div>
     <div class="container animate-blurred-fade-in absolute z-40">
         <h2>Bienvenido a QUILLA's BAKERY</h2>
         <p>Descubre nuestra deliciosa selección de panes, pasteles y postres.</p>
@@ -24,21 +27,20 @@
         justify-content: center;
         align-items: center;
         font-family: "Montserrat", sans-serif;
-        transition: background-image 0.5s ease; 
-
-
+        position: relative; /* Asegura que el pseudo-elemento ::before esté posicionado correctamente */
     }
+    
     .hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.575); /* Ajusta la opacidad según sea necesario */
-    pointer-events: none; /* Permite la interacción con el contenido */
-    z-index: 1; /* Asegura que el pseudo-elemento esté encima */
-}
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.575); /* Ajusta la opacidad según sea necesario */
+        pointer-events: none; /* Permite la interacción con el contenido */
+        z-index: 1; /* Asegura que el pseudo-elemento esté encima */
+    }
 
     .hero h2 {
         margin: 0 0 1rem 0;
@@ -51,22 +53,63 @@
         font-size: 1.5em; 
         font-weight: normal; 
     }
+
+    /* Animación de desvanecimiento para el fondo */
+    .fade-background {
+        transition: background-image 1s ease-in-out;
+    }
+        /* Animación de desvanecimiento para el fondo */
+        .fade-background {
+        transition: background-image 1s ease-in-out;
+
+    }
+    .background-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: opacity 1s ease-in-out;
+    }
+
+    @keyframes fadeBackgroundAnimation {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
 </style>
 
 <script>
-    import baguettes from "../assets/baguettes.jpg"
-    import fondopan from "../assets/fondopan.jpg"
-    import donuts from "../assets/donuts.jpg"
-    const images: string[] = [baguettes.src, fondopan.src, donuts.src];
-    let currentIndex: number = 0;
+    import baguettes from "../assets/baguettes.jpg";
+    import fondopan from "../assets/fondopan.jpg";
+    import donuts from "../assets/donuts.jpg";
 
-    function changeBackgroundImage(): void {
-        const heroElement: HTMLElement | null = document.querySelector('.hero');
+    const images = [baguettes, fondopan, donuts];
+    let currentIndex = 0;
+
+    function changeBackgroundImage() {
+        const heroElement = document.querySelector('.hero');
         if (heroElement) {
-            heroElement.style.backgroundImage = `url('${images[currentIndex]}')`;
+            // Añade la clase para la animación
+            const heroElement = document.querySelector('.hero') as HTMLElement;
+            heroElement.classList.add('fade-background');
+
+            // Cambia la imagen de fondo
+            heroElement.style.backgroundImage = `url('${images[currentIndex].src}')`;
+            
+            // Actualiza el índice para la siguiente imagen
             currentIndex = (currentIndex + 1) % images.length;
         }
     }
 
-    setInterval(changeBackgroundImage, 10000);
+    setInterval(changeBackgroundImage, 5000);
 </script>
+

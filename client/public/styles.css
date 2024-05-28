@@ -5,7 +5,10 @@ body {
   background-color: #310e11;
   color: #f7f3e9;
 }
-
+html {
+ scroll-behavior: smooth;
+ font-family: "Montserrat", sans-serif;
+}
 /* espacio de texto en pantalla */
 .container {
   max-width: 1300px;

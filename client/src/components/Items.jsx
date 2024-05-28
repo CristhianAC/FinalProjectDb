@@ -6,9 +6,10 @@ const Items = ({ items, addToCart }) => {
             {items.map((item, index) => (
                 <ItemCard
                 key={index}
-                image={item.image}
-                name={item.name}
-                price={item.price}
+                image={item.imagen}
+                name={item.nomproducto}
+                price={item.precio}
+                description={item.descrip}
                 addToCart={() => addToCart(item)}
                 />
             ))}

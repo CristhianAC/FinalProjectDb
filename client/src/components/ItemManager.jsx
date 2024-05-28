@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Items from './Items';
 import SearchBar from './SearchBar';
 import PriceFilter from './PriceFilter';
@@ -10,20 +10,21 @@ function App() {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000); // Ajusta el valor máximo según tus necesidades
   const [showFilter, setShowFilter] = useState(false);
+  const [items, setItems] = useState([]);
 
-  let items;
+  useEffect(() => {
+    fetchProductos();
+  }, []);
 
   const fetchProductos = async () => {
     try {
       const response = await getProducts();
-      console.log(response.data);
-      items = response.data;
+      
+      setItems(response.data);
     } catch (error) {
       console.error(error);
     }
   };
-
-
 
   const addToCart = (item) => {
     setCart([...cart, item]);
@@ -31,9 +32,9 @@ function App() {
   };
 
   const filteredItems = items.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    item.price >= minPrice &&
-    item.price <= maxPrice
+    item.nomproducto.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    item.precio >= minPrice &&
+    item.precio <= maxPrice
   );
 
   return (
@@ -57,7 +58,7 @@ function App() {
         </nav>
       )}
       
-      <Items {console.log(items)} items={filteredItems} addToCart={addToCart} />
+      <Items items={filteredItems} addToCart={addToCart} />
     </div>
   );
 }

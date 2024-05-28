@@ -9,6 +9,7 @@ const Items = ({ items, addToCart }) => {
                 image={item.imagen}
                 name={item.nomproducto}
                 price={item.precio}
+                description={item.descrip}
                 addToCart={() => addToCart(item)}
                 />
             ))}

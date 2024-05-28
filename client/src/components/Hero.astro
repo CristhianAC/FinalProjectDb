@@ -1,39 +1,147 @@
-<div class="hero animate-zoom-in">
-    <div class="container animate-blurred-fade-in">
-        <h2>Bienvenido a QUILLA's BAKERY</h2>
-        <p>Descubre nuestra deliciosa selección de panes, pasteles y postres.</p>
+
+---
+import baguettes from "../assets/baguettes.jpg" 
+import breads from "../assets/breads.jpg" 
+import donuts from "../assets/donuts.jpg" 
+import bread from "../assets/bread.jpg" 
+---
+<div class="slider-box">
+        <ul>
+            <li>
+                <img class="images" src={bread.src} alt="">
+                <div class="texto">
+                    <h2>Tradición y Sabor Artesanal</h2>
+                    <p>
+                        Descubre el sabor de la tradición en nuestra panadería. Cada día, nuestros maestros panaderos elaboran a mano una variedad de panes y dulces utilizando recetas tradicionales y los mejores ingredientes. Desde el crujiente pan de campo hasta los tiernos croissants, cada bocado es una experiencia única. ¡Visítanos y lleva a casa el auténtico sabor artesanal!
+                    </p>
+                </div>
+            </li>
+            <li>
+                <img class="images" src={breads.src} alt="">
+                <div class="texto">
+                    <h2>Frescura y Calidad Garantizadas</h2>
+                    <p>
+                        Nada supera al aroma de pan recién horneado. En nuestra panadería, horneamos cada día para ofrecerte productos frescos y de la más alta calidad. Disfruta de nuestros esponjosos baguettes, deliciosos pasteles y una selección de productos sin gluten que encantarán a toda la familia. ¡Ven y prueba la diferencia que hace la frescura!
+                    </p>
+                </div>
+            </li>
+            <li>
+                <img class="images" src={donuts.src} alt="">
+                <div class="texto">
+                    <h2>Delicias para Cada Ocasión</h2>
+                    <p>
+                        Celebra cada momento con nuestras delicias horneadas. Ya sea un desayuno especial, un cumpleaños o simplemente un antojo, tenemos algo perfecto para ti. Desde elegantes tartas y pasteles personalizados hasta muffins y galletas que alegran el día, nuestra panadería es tu mejor aliado para cada ocasión. ¡Haz tu pedido hoy y endulza tus momentos!
+                    </p>
+                </div>
+            </li>
+            <li>
+                <img class="images" src={baguettes.src} alt="">
+                <div class="texto">
+                    <h2>Innovación y Variedad en Cada Bocado</h2>
+                    <p>
+                        Explora nuevas sensaciones en nuestra panadería. Nos encanta innovar y sorprender a nuestros clientes con sabores únicos y combinaciones irresistibles. Prueba nuestros panes integrales con semillas, los creativos pasteles de temporada y las sorprendentes opciones veganas. ¡Cada visita es una nueva oportunidad para descubrir tu próxima obsesión culinaria!
+                    </p>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
 
 
 <style>
-.hero {
-    background-image: url('images/hero/fondopan.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 80vh; 
-    color: #ebf7f1;
-    text-align: center;
-    padding: 4rem 0;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background-color: beige;
+}
+
+.slider-box {
+    width: 1280px;
+    height: auto;
+    margin: auto;
+    overflow: hidden;
+}
+
+.slider-box ul {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: "Montserrat", sans-serif;
+    padding: 0;
+    width: 400%;
+    animation: slide 20s infinite alternate ease-in-out; 
 }
 
-.hero h2 {
-    margin: 0 0 1rem 0;
-    font-size: 2.2em; 
-    font-weight: bold; 
-
+.slider-box li {
+    width: 100%;
+    list-style: none;
+    position: relative;
 }
 
-.hero p {
-    margin: 0 0 1rem 0;
-    font-size: 1.5em; 
-    font-weight: normal; 
+.texto {
+    position: absolute;
+    text-align: center;
+    padding: 0 250px;
+    top: 250px;
+    color: white;
+}
+
+.texto h2 {
+    font-size: 45px;
+    margin-bottom: 35px;
+}
+
+.slider-box img {
+    width: 100%;
+}
+
+.images {
+    width: 1920px;
+    height: 1080px;
+}
+
+@keyframes slide {
+    0% {margin-left: 0;}
+    20% {margin-left: 0;}
+
+    25% {margin-left: -100%;}
+    45% {margin-left: -100%;}
+
+    50% {margin-left: -200%;}
+    70% {margin-left: -200%;}
+
+    75% {margin-left: -300%;}
+    100% {margin-left: -300%;}
+}
+
+@media(max-width:991px) {
+
+    body {
+        padding: 30px;
+    }
+    .slider-box {
+        width: 100%;
+    }
+
+    .texto {
+        top: 50px;
+        padding: 0 25px;
+    }
+
+    .texto h2 {
+        font-size: 35px;
+        margin-bottom: 15px;
+    }
+
+    .texto p {
+        font-size: 15px;
+    }
+
+
 }
 
 </style>
+
+

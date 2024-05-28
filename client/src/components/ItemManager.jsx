@@ -31,7 +31,7 @@ function App() {
   );
 
   return (
-    <div className='contenedor'>
+    <div className='contenedor max-md:px-0 px-20'>
       <button 
         className='open-filter-button'
         onClick={() => setShowFilter(!showFilter)}

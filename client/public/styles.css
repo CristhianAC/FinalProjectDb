@@ -175,7 +175,7 @@ footer {
 
 .contenedor {
   position: relative;
-  padding: 130px;
+  padding-top: 6rem;
   display: flex;
 }
 

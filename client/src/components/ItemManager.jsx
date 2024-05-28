@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Items from './Items';
 import SearchBar from './SearchBar';
 import PriceFilter from './PriceFilter';
+import { getProducts } from './API/Conexion-api';
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -10,14 +11,19 @@ function App() {
   const [maxPrice, setMaxPrice] = useState(50000); // Ajusta el valor máximo según tus necesidades
   const [showFilter, setShowFilter] = useState(false);
 
-  const items = [
-    { name: 'Pan de Bono', price: 3000, image: '/src/assets/Pan-de-bonojpg.jpg' },
-    { name: 'Pan de Queso', price: 4000, image: '/src/assets/Pan-de-queso.jpg' },
-    { name: 'Pizza Perro', price: 35000, image: '/src/assets/pizza_perro.png'},
-    { name: 'Pan de Yuca', price: 5000, image: '/src/assets/pan-de-yuca.jpg'},
-    { name: 'Pan de Molde', price: 5000, image: '/src/assets/pan-de-molde.jpg'},
-    // Añadir más items según sea necesario
-  ];
+  let items;
+
+  const fetchProductos = async () => {
+    try {
+      const response = await getProducts();
+      console.log(response.data);
+      items = response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
 
   const addToCart = (item) => {
     setCart([...cart, item]);
@@ -51,7 +57,7 @@ function App() {
         </nav>
       )}
       
-      <Items items={filteredItems} addToCart={addToCart} />
+      <Items {console.log(items)} items={filteredItems} addToCart={addToCart} />
     </div>
   );
 }

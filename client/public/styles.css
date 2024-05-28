@@ -87,7 +87,6 @@ footer {
   border: 1px solid #310e11;
   border-radius: 8px;
   padding: 1rem;
-  margin: 1.7rem;
   max-width: 230px;
   max-height: 500px;
   text-align: center;
@@ -232,4 +231,22 @@ footer {
   display: block;
   margin: 5em auto;
   accent-color: #310e11;
+}
+
+
+/* Media query para pantallas pequeñas (móviles) */
+@media (max-width: 600px) {
+  .features .feature {
+    width: 100%;
+    display: block;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Media query para pantallas medianas (tabletas) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .features .feature {
+    width: 45%;
+    margin-bottom: 1rem;
+  }
 }

@@ -3,14 +3,17 @@ import Items from './Items';
 import SearchBar from './SearchBar';
 import PriceFilter from './PriceFilter';
 import { getProducts } from './API/Conexion-api';
+import { Link } from 'react-router-dom';
 
-function App() {
+function ItemManager() {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(50000); // Ajusta el valor máximo según tus necesidades
   const [showFilter, setShowFilter] = useState(false);
   const [items, setItems] = useState([]);
+  
+
 
   useEffect(() => {
     fetchProductos();
@@ -28,8 +31,9 @@ function App() {
 
   const addToCart = (item) => {
     setCart([...cart, item]);
-    alert(`${item.name} añadido al carrito`);
+    alert(`${item.nomproducto} añadido al carrito`);
   };
+
 
   const filteredItems = items.filter(item => 
     item.nomproducto.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -38,29 +42,36 @@ function App() {
   );
 
   return (
-    <div className='contenedor max-md:px-0 px-20'>
-      <button 
-        className='open-filter-button'
-        onClick={() => setShowFilter(!showFilter)}
-      >
-        <i className="fas fa-search"></i>
-      </button>
-      
-      {showFilter && (
-        <nav className='filter-nav'>
-          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          <PriceFilter 
-            minPrice={minPrice} 
-            maxPrice={maxPrice} 
-            setMinPrice={setMinPrice} 
-            setMaxPrice={setMaxPrice}
-          />
-        </nav>
-      )}
-      
-      <Items items={filteredItems} addToCart={addToCart} />
-    </div>
+        <div className='contenedor max-md:px-0 px-20'>
+          <button className='open-shopiing-cart'>
+            <Link to='/ShoppingCart' className='ShoppingCart'>
+              <i className="fas fa-shopping-cart"></i>
+              <span>{cart.length}</span>
+            </Link>
+          </button>
+
+          <button 
+            className='open-filter-button'
+            onClick={() => setShowFilter(!showFilter)}
+          >
+            <i className="fas fa-search"></i>
+          </button>
+          
+          {showFilter && (
+            <nav className='filter-nav'>
+              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+              <PriceFilter 
+                minPrice={minPrice} 
+                maxPrice={maxPrice} 
+                setMinPrice={setMinPrice} 
+                setMaxPrice={setMaxPrice}
+              />
+            </nav>
+          )}
+          
+          <Items items={filteredItems} addToCart={addToCart} />
+        </div>
   );
 }
 
-export default App;
+export default ItemManager;

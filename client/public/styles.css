@@ -204,7 +204,7 @@ footer {
   top: 20px;
   right: 20px;
   padding: 12px 20px;
-  background-color: #c59a25d7;
+  background-color: #b9825f;
   color: white;
   border: none;
   border-radius: 50%;
@@ -222,7 +222,7 @@ footer {
   top: 100px; /* Ajusta esto según la altura del botón */
   right: 20px;
   width: 300px;
-  background-color: #e9c461d7;
+  background-color: #b9825f;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
   border-radius: 10px;
@@ -269,4 +269,17 @@ footer {
     width: 45%;
     margin-bottom: 1rem;
   }
+}
+
+.open-shopiing-cart {
+  position: absolute;
+  font-size: 24px;
+  top: 20px;
+  right: 90px;
+  padding: 12px 20px;
+  color: #b9825f;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }

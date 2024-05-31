@@ -44,7 +44,7 @@ function ItemManager() {
   return (
         <div className='contenedor max-md:px-0 px-20'>
           <button className='open-shopiing-cart'>
-            <Link to='/ShoppingCart' className='ShoppingCart'>
+            <Link to='/ShoppingC' className='ShoppingCart'>
               <i className="fas fa-shopping-cart"></i>
               <span>{cart.length}</span>
             </Link>

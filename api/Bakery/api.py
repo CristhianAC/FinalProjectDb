@@ -231,31 +231,87 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST) 
 class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
     serializer_class = CarritoSerializer
-    
-    def get_queryset(self):
-        return carrito.objects.filter(idc=self.request.user)
+    lookup_field = 'pk'
+    @action(detail=True, methods=['post'])
+    def add_item(self, request, pk=None):
+        carrito = self.get_object()
+        producto_id = request.query_params['idp']
+        cantidad = request.query_params['cantidad', 1]
+
+        # Verificar si el producto existe
+        if not producto.objects.filter(idp=producto_id).exists():
+            return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        producto = producto.objects.get(idp=producto_id)
+
+        # Verificar si la entrada ya existe en carritoproducto
+        try:
+            carrito_producto = carritoproducto.objects.get(carrito=carrito, producto=producto)
+            carrito_producto.cantidad += int(cantidad)  # Actualizar la cantidad si ya existe
+        except carritoproducto.DoesNotExist:
+            carrito_producto = carritoproducto(carrito=carrito, producto=producto, cantidad=int(cantidad))  # Crear nueva entrada si no existe
+
+        carrito_producto.save()
+
+        serializer = CarritoProductoSerializer(carrito_producto)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'])
-    def agregar_carrito(self, request):
-        idp = request.query_params['idp']
+    def remove_item(self, request, pk=None):
+        carrito = self.get_object()
+        producto_id = request.data.get('producto_id')
+
+        # Verificar si el producto existe
+        if not producto.objects.filter(idp=producto_id).exists():
+            return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+        producto = producto.objects.get(idp=producto_id)
+
+        # Verificar si la entrada existe en carritoproducto
+        try:
+            carrito_producto = carritoproducto.objects.get(carrito=carrito, producto=producto)
+        except carritoproducto.DoesNotExist:
+            return Response({'error': 'Producto no está en el carrito'}, status=status.HTTP_404_NOT_FOUND)
+
+        carrito_producto.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+class carritoproductoViewSet(viewsets.ModelViewSet):
+    queryset = carritoproducto.objects.all()
+    serializer_class = CarritoProductoSerializer
+    lookup_field = 'pk'
+    def retrieve(self, request, pk=None):
+        carrito_producto = self.get_object()
+        serializer = self.get_serializer(carrito_producto)
+        return Response(serializer.data)
+    @action(detail=False, methods=['post'])
+    def add_item(self, request):
+        carrito_id = request.query_params['carrito_id']
+        producto_id = request.query_params['producto_id']
         cantidad = request.query_params['cantidad']
-        producto = get_object_or_404(producto, idp=idp)
-        carrit, creado = carrito.objects.get_or_create(cliente=request.user.cliente)
-        item_carrito, creado = itemcarrito.objects.get_or_create(carrito=carrito, producto=producto)
-        if not creado:
-            item_carrito.cantidad += cantidad
+
+        carritoa = get_object_or_404(carrito, id=carrito_id)
+        productoa = get_object_or_404(producto, idp=producto_id)
+
+        carrito_producto, created = carritoproducto.objects.get_or_create(carrito=carritoa, producto=productoa)
+        if not created:
+            carrito_producto.cantidad += int(cantidad)
         else:
-            item_carrito.cantidad = cantidad
-        item_carrito.save()
+            carrito_producto.cantidad += int(cantidad)
 
-        return Response(status=status.HTTP_200_OK)
+        carrito_producto.save()
 
-    @action(detail=True, methods=['get'])
-    def ver_carrito(self, request):
-        carrito = get_object_or_404(carrito, cliente=request.user.cliente)
-        serializer = CarritoSerializer(carrito)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = CarritoProductoSerializer(carrito_producto)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    @action(detail=False, methods=['delete'])
+    def remove_item(self, request):
+        carrito_id = request.query_params['carrito_id']
+        producto_id = request.query_params['producto_id']
+
+        carritoa = get_object_or_404(carrito, id=carrito_id)
+        productoa = get_object_or_404(producto, idp=producto_id)
+
+        carrito_producto = get_object_or_404(carritoproducto, carrito=carritoa, producto=productoa)
+        carrito_producto.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

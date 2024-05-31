@@ -50,19 +50,14 @@ class colaRepartidorSerializer(serializers.ModelSerializer):
     class Meta:
         model = colarepartidor
         fields = '__all__'
-class itemCarritoSerializer(serializers.ModelSerializer):
-    total_precio = serializers.SerializerMethodField()
+
+class CarritoProductoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = itemcarrito
+        model = carritoproducto
         fields = '__all__'
-        read_only_fields = ['idcarrito', 'idproducto']
-    def total_precio(self, obj):
-        return obj.total_precio()
+
 class CarritoSerializer(serializers.ModelSerializer):
-    items = itemCarritoSerializer(many=True, read_only=True)
-    total_precio = serializers.SerializerMethodField()
+    productos = CarritoProductoSerializer(source='carritoproducto_set',many=True, read_only=True)
     class Meta:
         model = carrito
         fields = '__all__'
-    def get_total_precio(self, obj):
-        return sum([item.total_precio() for item in obj.items.all()])

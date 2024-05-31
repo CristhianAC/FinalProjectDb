@@ -13,6 +13,6 @@ admin.site.register(disponibilidad)
 admin.site.register(mediotransp)
 admin.site.register(colarepartidor)
 admin.site.register(carrito)
-admin.site.register(itemcarrito)
+admin.site.register(carritoproducto)
 # Register your models here.
 

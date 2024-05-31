@@ -67,9 +67,15 @@ class mediotransp(models.Model):
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
     hora = models.TimeField(auto_now_add=True)
-class carrito(models.Model):
-    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
-class itemcarrito(models.Model):
-    idcarrito = models.ForeignKey(carrito, on_delete=models.CASCADE)
     idproducto = models.ForeignKey(producto, on_delete=models.CASCADE)
     cantidad = models.IntegerField()
+class carrito(models.Model):
+    cliente = models.OneToOneField(cliente, on_delete=models.CASCADE)
+    productos = models.ManyToManyField(producto, through='carritoproducto')
+    created_at = models.DateTimeField(auto_now_add=True)
+class carritoproducto(models.Model):
+    carrito = models.ForeignKey(carrito, on_delete=models.CASCADE)
+    producto = models.ForeignKey(producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+    class Meta:
+        unique_together = ('carrito', 'producto')

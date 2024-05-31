@@ -15,4 +15,5 @@ router.register('disponibilidad', disponibilidadViewSet, 'disponibilidad')
 router.register('mediotransp', mediotranspViewSet, 'mediotransp')
 router.register('colarepartidor', colarepartidorViewSet, 'colarepartidor')
 router.register('carrito', carritoViewSet, 'carrito')
+router.register('carritoproducto', carritoproductoViewSet, 'carritoproducto')
 urlpatterns = router.urls

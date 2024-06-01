@@ -1,20 +1,18 @@
 import { Link } from "react-router-dom";
 
 
-const ShoppingCart = ({ cart }) => {
+const ShoppingC = ({ cart }) => {
   
     return (
       <div>
-        <button className='back-to-products'>
-          <Link to='/productos/item-manager' className='back-to-products'>
-            <i className="fas fa-arrow-left"></i>
+        <button className=' m-10 bg-[#f7f3e9] text-[#310e11] p-3 hover:bg-[#aca9a3] transition-all duration-500 rounded-2xl'>
+          <Link to='/productos/' className=''>
+            <i className="fas fa-arrow-left mr-2"></i>
             <span>Productos</span>
           </Link>
         </button>
-
-
       </div>
     );
   };
   
-export default ShoppingCart;
+export default ShoppingC;

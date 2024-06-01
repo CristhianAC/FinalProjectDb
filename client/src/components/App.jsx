@@ -7,9 +7,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/productos" element={<Navigate to="/productos/item-manager" replace />} />
-        <Route path="/productos/item-manager" element={<ItemManager />} />
-        <Route path="/productos" element={<Navigate to="/ShoppingCart" replace />} />
-        <Route path="/ShoppingCart" element={<ShoppingCart />} />
+        <Route path="/productos/" element={<ItemManager />} />
+        <Route path="/productos" element={<Navigate to="/ShoppingC" replace />} />
+        <Route path="/ShoppingC" element={<ShoppingCart />} />
       </Routes>
     </Router>
   );

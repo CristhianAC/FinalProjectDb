@@ -1,3 +1,4 @@
+from itertools import count
 from django.shortcuts import get_object_or_404
 from .models import *
 from rest_framework import viewsets, permissions
@@ -6,6 +7,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from django.db.models import Count
+from django.db.models.functions import TruncDay
+from django.db.models import F
 class productoViewSet(viewsets.ModelViewSet):
     queryset = producto.objects.all()
     permission_classes = [
@@ -160,6 +164,15 @@ class entregaViewSet(viewsets.ModelViewSet):
         entrega = get_object_or_404(entrega, codigoentrega=codigoentrega)
         entrega.delete()
         return Response(status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'])
+    def pedidos_por_dia(self, request):
+        fecha = request.query_params['fecha']
+        if not fecha:
+            return Response({"error": "Se requiere un parámetro de 'fecha'"}, status=400)
+        
+        queryset = pedido.objects.filter(fecha=fecha).annotate(dia=TruncDay('fecha')).values('dia').annotate(total_pedidos=Count('idpedido'))
+        return Response(queryset)
 class disponibilidadViewSet(viewsets.ModelViewSet):
     queryset = disponibilidad.objects.all()
     permission_classes = [

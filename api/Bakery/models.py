@@ -38,9 +38,7 @@ class direccionentrega(models.Model):
     direccion = models.CharField(max_length=100, primary_key=True)
 class fecha(models.Model):
     idfecha = models.CharField(max_length=100, primary_key=True)
-    dia = models.IntegerField(validators=[validate_day])
-    mes = models.IntegerField(validators=[validate_month])
-    anio = models.IntegerField()
+    fecha = models.DateField()
     hinicio = models.TimeField()
     hfinal = models.TimeField()
 class repartidor(models.Model):

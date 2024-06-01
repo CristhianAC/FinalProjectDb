@@ -2,52 +2,46 @@
 import { SignIn, SignOut } from "auth-astro/components";
 import { getSession } from "auth-astro/server";
 const session = await getSession(Astro.request);
+import Register from './Register.astro';
 ---
 
 <header>
-  <header>
-    <div class="header-container">
-      <div class="main-header">
-        <a href="/" class="logo">
-          <img src="/images/header/icono.png" alt="QUILLA's BAKERY" />
-        </a>
-        <nav>
-          <ul>
-            <li><a href="/productos" class="boton-productos">Productos</a></li>
-            <li><a href="#contact-section" class="boton-contacto">Contáctenos</a></li>
-            <li>
-              {
-                !session ? (
-                  <a href="#" class="login-button" id="login-button">
-                    Iniciar sesión
-                  </a>
-                ) : (
-                  <div class="user-menu-container">
-                    <div class="user-info-container">
-                      <img
-                        src={session.user?.image}
-                        alt="Perfil"
-                        class="user-image"
-                        id="user-menu-toggle"
-                      />
-                      <div class="user-name">
-                        {session.user && session.user.name ? `${session.user.name.split(' ')[0]} ${session.user.name.split(' ')[1]?.charAt(0)}.` : ''}
-                      </div>
-                    </div>
-                    <div id="user-menu" class="user-menu">
-                      <SignOut class="user-menu-item signout-button">
-                        Cerrar sesión
-                      </SignOut>
-                    </div>
+  <div class="header-container">
+    <div class="main-header">
+      <a href="/" class="logo">
+        <img src="/images/header/icono.png" alt="QUILLA's BAKERY" />
+      </a>
+      <nav>
+        <ul>
+          <li><a href="/productos">Productos</a></li>
+          <li><a href="#contact-section">Contáctenos</a></li>
+          <li>
+            { !session ? (
+              <a href="#" class="login-button" id="login-button">Iniciar sesión</a>
+            ) : (
+              <div class="user-menu-container">
+                <div class="user-info-container">
+                  <img
+                    src={session.user?.image}
+                    alt="Perfil"
+                    class="user-image"
+                    id="user-menu-toggle"
+                  />
+                  <div class="user-name">
+                    {session.user && session.user.name ? `${session.user.name.split(' ')[0]} ${session.user.name.split(' ')[1]?.charAt(0)}.` : ''}
                   </div>
-                )
-              }
-            </li>
-          </ul>
-        </nav>
-      </div>
+                </div>
+                <div id="user-menu" class="user-menu">
+                  <SignOut class="user-menu-item signout-button">Cerrar sesión</SignOut>
+                </div>
+              </div>
+            )}
+          </li>
+        </ul>
+      </nav>
     </div>
-  </header>
+  </div>
+</header>
   
   {
     !session && (
@@ -102,13 +96,15 @@ const session = await getSession(Astro.request);
               </SignIn>
             </div>
             <p class="sign-up-label">
-              No tienes una cuenta? <span class="sign-up-link" id="sign-up-link">Crear una cuenta</span>
+              No tienes una cuenta? <span class="sign-up-link" id="sign-up-link">Regístrate</span>
             </p>
           </div>
         </div>
       </div>
     )
   }
+
+<Register />
 
 <style>
   /* Estilos generales */
@@ -227,6 +223,8 @@ nav ul li .login-button:hover {
 .user-menu-item:hover {
   background-color: #f1f1f1;
 }
+
+/* comienza estilos login */
 
 #user-menu-toggle:hover + .user-menu,
 #user-menu-toggle:focus + .user-menu,
@@ -371,22 +369,6 @@ nav ul li .login-button:hover {
   background-color: #f5f5f5;
 }
 
-.apple-login-button {
-  border: 2px solid #747474;
-  color: rgb(12, 13, 13);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  gap: 0.5rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.apple-login-button:hover {
-  background-color: #f5f5f5;
-}
 
 .google-icon,
 .apple-icon {
@@ -406,7 +388,7 @@ nav ul li .login-button:hover {
 }
 
 .sign-up-link:hover {
-  color: #1a0709;
+  color: #b9825f;
   text-decoration: underline;
 }
 
@@ -499,81 +481,66 @@ nav ul li .login-button:hover {
 </style>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-  const userMenuToggle = document.getElementById("user-menu-toggle");
-  const userMenu = document.getElementById("user-menu");
+  // Definir HTML elementos para validar typescript
+const getElement = <T extends HTMLElement>(id: string): T | null => document.getElementById(id) as T | null;
+const getElements = <T extends HTMLElement>(selector: string): NodeListOf<T> => document.querySelectorAll(selector) as NodeListOf<T>;
 
-  if (userMenuToggle) {
-    userMenuToggle.onclick = () => {
-      if (userMenu) {
-        userMenu.style.display =
-          userMenu.style.display === "block" ? "none" : "block";
-      }
-    };
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  const userMenuToggle = getElement<HTMLButtonElement>("user-menu-toggle");
+  const userMenu = getElement<HTMLDivElement>("user-menu");
+  const loginButton = getElement<HTMLButtonElement>("login-button");
+  const loginModal = getElement<HTMLDivElement>("login-modal");
+  const closeButtons = getElements<HTMLSpanElement>(".close");
+  const signUpLink = getElement<HTMLAnchorElement>("sign-up-link");
+  const signUpModal = getElement<HTMLDivElement>("sign-up-modal");
+  const loginForm = getElement<HTMLFormElement>("login-form");
 
-  window.onclick = (event) => {
+  // abrir y cerrar menu de usuario
+  userMenuToggle?.addEventListener("click", () => {
+    if (userMenu) {
+      userMenu.style.display = userMenu.style.display === "block" ? "none" : "block";
+    }
+  });
+
+  // cerrar afuera del menu
+  window.addEventListener("click", (event) => {
     if (event.target !== userMenuToggle && event.target !== userMenu) {
       if (userMenu) {
         userMenu.style.display = "none";
       }
     }
-  };
-});
+  });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById("login-modal");
-  const btn = document.getElementById("login-button");
-  const span = document.querySelector(".close");
-
-  if (btn instanceof HTMLElement) {
-    btn.onclick = () => {
-      if (modal) {
-        modal.style.display = "block";
-      }
-    };
-  }
-
-  if (span) {
-    span.addEventListener("click", () => {
-      if (modal) {
-        modal.style.display = "none";
-      }
-    });
-  }
-
-  window.onclick = (event) => {
-    if (event.target === modal) {
-      if (modal) {
-        modal.style.display = "none";
-      }
+  // abrir modal de login
+  loginButton?.addEventListener("click", () => {
+    if (loginModal) {
+      loginModal.style.display = "block";
     }
-  };
-});
+  });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const loginButton = document.getElementById("login-button");
-  const loginModal = document.getElementById("login-modal");
-  const closeModal = document.querySelector(".close");
-  const loginForm = document.getElementById("login-form");
-  const signUpLink = document.getElementById("sign-up-link");
-
-  if (loginButton instanceof HTMLElement) {
-    loginButton.addEventListener("click", () => {
-      if (loginModal) {
-        loginModal.style.display = "block";
-      }
-    });
-  }
-
-  if (closeModal) {
-    closeModal.addEventListener("click", () => {
+  // cerrar modal de login y sign-up con el boton de cerrar
+  closeButtons.forEach(button => {
+    button.addEventListener("click", () => {
       if (loginModal) {
         loginModal.style.display = "none";
       }
+      if (signUpModal) {
+        signUpModal.style.display = "none";
+      }
     });
-  }
+  });
 
+  // cambio de modal de login a sign-up
+  signUpLink?.addEventListener("click", () => {
+    if (loginModal) {
+      loginModal.style.display = "none";
+    }
+    if (signUpModal) {
+      signUpModal.style.display = "block";
+    }
+  });
+
+  // cerrar modal de login y sign-up con click afuera
   window.addEventListener("click", (event) => {
     if (event.target === loginModal) {
       if (loginModal) {
@@ -582,13 +549,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (signUpLink) {
-    signUpLink.addEventListener("click", () => {
-      window.location.href = "/crear-cuenta";
-    });
-  }
-
-  if (loginForm instanceof HTMLFormElement) {
+  // cerrar modal de login y sign-up con la tecla esc
+  if (loginForm) {
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
@@ -596,31 +558,29 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = formData.get("email");
       const password = formData.get("password");
 
-      try {
-        const response = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+      if (typeof email === "string" && typeof password === "string") {
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          alert("Inicio de sesión exitoso");
-          if (loginModal) {
-            loginModal.style.display = "none";
+          if (response.ok) {
+            const data = await response.json();
+            alert("Inicio de sesión exitoso");
+            if (loginModal) {
+              loginModal.style.display = "none";
+            }
+            window.location.reload();
+          } else {
+            const error = await response.json();
+            alert(`Error: ${error.message}`);
           }
-          window.location.reload(); // Recargar la página para actualizar el estado de la sesión
-        } else {
-          const error = await response.json();
-          alert(`Error: ${error.message}`);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(`Error: ${error.message}`);
-        } else {
-          alert(`Error: ${error}`);
+        } catch (error) {
+          alert(`Error: ${error instanceof Error ? error.message : error}`);
         }
       }
     });

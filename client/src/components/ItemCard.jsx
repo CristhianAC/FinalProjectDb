@@ -13,8 +13,11 @@ const ItemCard = ({ image, name, price, description, addToCart, item }) => {
     
   }
   useEffect(() => {
-    if(cartAdded === true)
+    if(cartAdded === true){
     addToCart([item.nomproducto, value]);
+     if (value === 0) 
+        setCartAdded(false);
+    }
     
   }, [value]);
   return (
@@ -42,7 +45,7 @@ const ItemCard = ({ image, name, price, description, addToCart, item }) => {
         
       </div>}
       {!cartAdded&&<button
-          onClick={()=>setCartAdded(true)}
+          onClick={()=>{setCartAdded(true); sumvalue()}}
           className="btn animate-slide-in-bottom transition-all duration-300 hover:rounded-2xl"
         >
           Añadir al Carrito

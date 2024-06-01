@@ -24,12 +24,13 @@ class cliente(models.Model):
     correo = models.EmailField(unique = True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    contraseña = models.CharField(max_length=100)
+    password = models.CharField(max_length=250, null=True, blank=True)
     admin = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        self.contraseña = make_password(self.contraseña)
+        if self.password is not None and self.password != '':
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)
 class pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)

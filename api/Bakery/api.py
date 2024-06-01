@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.db.models import Count
 from django.db.models.functions import TruncDay
-
+from django.contrib.auth.hashers import check_password
 class productoViewSet(viewsets.ModelViewSet):
     queryset = producto.objects.all()
     permission_classes = [
@@ -38,14 +38,14 @@ class clienteViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = ClienteSerializer  
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_cliente(self, request):
         idc = request.query_params['idc']
         nombre = request.query_params['nombre']
         apellido = request.query_params['apellido']
-        contraseña = request.query_params['contraseña']
+        password = request.query_params['password']
         admin = request.query_params['admin']
-        cliente = cliente.objects.create(idc=idc, nombre=nombre, apellido=apellido, contraseña=contraseña, admin=admin)
+        clientea = cliente.objects.create(idc=idc, nombre=nombre, apellido=apellido, password=password, admin=admin)
         return Response(status=status.HTTP_200_OK)
     @action(detail=True, methods=['delete'])
     def eliminar_cliente(self, request):
@@ -53,11 +53,32 @@ class clienteViewSet(viewsets.ModelViewSet):
         cliente = get_object_or_404(cliente, idc=idc)
         cliente.delete()
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['get'])
+    @action(detail=False, methods=['get'])
     def check_cliente(self, request):
         correo = request.query_params['correo']
-        cliente = get_object_or_404(cliente, correo=correo)
+        clientea = get_object_or_404(cliente, correo=correo)
         return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def check_password(self, request):
+        password = request.query_params['password']
+        correo = request.query_params['correo']
+        clientecheck = cliente.objects.filter(correo=correo).first()
+        if clientecheck.password is None:
+            return Response('El usuario no tiene registrado una contraseña')
+        passwordcompare = check_password(password, clientecheck.password)
+        return Response('Contraseña correcta' if passwordcompare else 'Contraseña incorrecta')
+    @action(detail=False, methods=['post'])
+    def google_login(self, request):
+        correo = request.query_params['correo']
+        idc = request.query_params['idc']
+        nombre = request.query_params['nombre']
+        apellido = request.query_params['apellido']
+        activo = request.query_params['activo']
+        if not cliente.objects.filter(correo=correo).exists():
+            cliente.objects.create(idc=idc, correo=correo, nombre=nombre, apellido=apellido, activo=activo)
+            return Response({'Message':'Se ha creado el usuario'},status=status.HTTP_200_OK)
+        else:
+            return Response({'Message':'El usuario ya existe'})
     
 class pedidoViewSet(viewsets.ModelViewSet):
     queryset = pedido.objects.all()

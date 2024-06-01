@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.db.models import Count
 from django.db.models.functions import TruncDay
-from django.db.models import F
+
 class productoViewSet(viewsets.ModelViewSet):
     queryset = producto.objects.all()
     permission_classes = [
@@ -53,6 +53,12 @@ class clienteViewSet(viewsets.ModelViewSet):
         cliente = get_object_or_404(cliente, idc=idc)
         cliente.delete()
         return Response(status=status.HTTP_200_OK)
+    @action(detail=True, methods=['get'])
+    def check_cliente(self, request):
+        correo = request.query_params['correo']
+        cliente = get_object_or_404(cliente, correo=correo)
+        return Response(status=status.HTTP_200_OK)
+    
 class pedidoViewSet(viewsets.ModelViewSet):
     queryset = pedido.objects.all()
     permission_classes = [

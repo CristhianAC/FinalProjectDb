@@ -21,10 +21,12 @@ class producto(models.Model):
     imagen = models.URLField(default='')
 class cliente(models.Model):
     idc = models.TextField(primary_key=True)
+    correo = models.EmailField(unique = True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     contraseña = models.CharField(max_length=100)
     admin = models.BooleanField(default=False)
+    activo = models.BooleanField(default=True)
 class pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)

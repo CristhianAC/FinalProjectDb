@@ -1,7 +1,7 @@
 from django.db import models
 from django.forms import ValidationError
 from django.db import models
-
+from django.contrib.auth.hashers import make_password
 def validate_day(value):
     if value < 1 or value > 31:
         raise ValidationError(f'{value} no es un día válido. Debe estar entre 1 y 31.')
@@ -27,6 +27,10 @@ class cliente(models.Model):
     contraseña = models.CharField(max_length=100)
     admin = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        self.contraseña = make_password(self.contraseña)
+        super().save(*args, **kwargs)
 class pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)

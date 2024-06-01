@@ -85,7 +85,7 @@ footer {
 }
 
 .producto {
-  background-color: #ebf7f1;
+  background-color: #FCFBF4;
   color: #310e11;
   border: 1px solid #310e11;
   border-radius: 8px;
@@ -115,7 +115,7 @@ footer {
 
 .btn {
   display: inline-block;
-  background-color: #6e3338;
+  background-color: #310e11;
   color: #ebf7f1;
   padding: 0.5rem 1rem;
   text-decoration: none;
@@ -124,7 +124,7 @@ footer {
 }
 
 .btn-explorar {
-  background-color: #6e3338;
+  background-color: #310e11;
   color: #ebf7f1;
   padding: 1rem 2rem;
   text-decoration: none;
@@ -152,11 +152,11 @@ footer {
 }
 
 .btn-explorar:hover {
-  background-color: #c59a25d7;
+  background-color: #1a0709;
 }
 
 .btn:hover {
-  background-color: #c59a25d7;
+  background-color: #1a0709;
 }
 
 .search-bar {
@@ -172,8 +172,8 @@ footer {
 }
 
 .search-bar:focus {
-  border-color: #b55e3c;
-  box-shadow: 0 0 8px rgba(241, 189, 76, 0.6);
+  border-color: #310e11;
+  box-shadow: 0 0 8px rgba(84, 23, 23, 0.6);
   outline: none;
 }
 
@@ -204,7 +204,7 @@ footer {
   top: 20px;
   right: 20px;
   padding: 12px 20px;
-  background-color: #b9825f;
+  background-color: #310e11;
   color: white;
   border: none;
   border-radius: 50%;
@@ -214,7 +214,7 @@ footer {
 }
 
 .open-filter-button:hover {
-  background-color: #e9c461d7;
+  background-color: #1a0709;
 }
 
 .filter-nav {
@@ -222,9 +222,10 @@ footer {
   top: 100px; /* Ajusta esto según la altura del botón */
   right: 20px;
   width: 300px;
-  background-color: #b9825f;
+  background-color: #FCFBF4;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
+  border: solid 3px #1a0709;
   border-radius: 10px;
   z-index: 1000;
 }
@@ -277,9 +278,21 @@ footer {
   top: 20px;
   right: 90px;
   padding: 12px 20px;
-  color: #b9825f;
+  color: #310e11;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.3s;
+}
+
+.open-shopiing-cart i:hover {
+  color: #1a0709;
+  transition: color 0.5s;
+  font-size: 28px;
+  transition: font-size 0.5s;
+}
+
+.shopping-cart-container {
+  background-color: #b9825f;
+  padding: 1rem;
 }

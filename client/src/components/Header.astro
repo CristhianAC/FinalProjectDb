@@ -13,8 +13,8 @@ const session = await getSession(Astro.request);
         </a>
         <nav>
           <ul>
-            <li><a href="/productos">Productos</a></li>
-            <li><a href="#contact-section">Contáctenos</a></li>
+            <li><a href="/productos" class="boton-productos">Productos</a></li>
+            <li><a href="#contact-section" class="boton-contacto">Contáctenos</a></li>
             <li>
               {
                 !session ? (
@@ -166,7 +166,7 @@ nav ul li .login-button {
 
 nav ul li a.login-button,
 nav ul li .login-button {
-  background-color: #6e3338;
+  background-color: #310e11;
   color: #ebf7f1;
   border-radius: 5px;
   text-decoration: none;
@@ -175,7 +175,7 @@ nav ul li .login-button {
 
 nav ul li a.login-button:hover,
 nav ul li .login-button:hover {
-  background-color: #c59a25d7;
+  background-color: #1a0709;
 }
 
 .user-menu-container {
@@ -248,7 +248,7 @@ nav ul li .login-button:hover {
 }
 
 .modal-content {
-  background-color: #fff;
+  background-color: #FCFBF4;
   margin: 5% auto;
   padding: 20px;
   border-radius: 10px;
@@ -284,7 +284,7 @@ nav ul li .login-button:hover {
   margin: 10px 0 10px 0;
   font-size: 28px;
   font-weight: 800;
-  color: #6e3338;
+  color: #310e11;
 }
 
 .form {
@@ -297,7 +297,7 @@ nav ul li .login-button:hover {
 .input {
   padding: 0.75rem;
   font-size: 1rem;
-  border: 1px solid #1b1010;
+  border: 1px solid #1a0709;
   border-radius: 5px;
   width: 100%;
   box-sizing: border-box;
@@ -309,7 +309,7 @@ nav ul li .login-button:hover {
   font-size: 1rem;
   border: none;
   border-radius: 5px;
-  background-color: #6e3338;
+  background-color: #310e11;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -318,7 +318,7 @@ nav ul li .login-button:hover {
 }
 
 .form-btn:hover {
-  background-color: #310e11;
+  background-color: #1a0709;
 }
 
 .page-link {
@@ -401,12 +401,12 @@ nav ul li .login-button:hover {
 }
 
 .sign-up-link {
-  color: #6e3338;
+  color: #310e11;
   cursor: pointer;
 }
 
 .sign-up-link:hover {
-  color: #310e11;
+  color: #1a0709;
   text-decoration: underline;
 }
 
@@ -469,6 +469,31 @@ nav ul li .login-button:hover {
   .user-name {
     font-size: 0.9rem;
   }
+
+}
+
+.boton-productos {
+  color: #310e11;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: font-weight 0.5s ease, color 0.5s ease;
+}
+
+.boton-productos:hover {
+  color: #1a0709;
+  font-weight: 800;
+}
+
+.boton-contacto {
+  color: #310e11;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: font-weight 0.5s ease, color 0.5s ease;
+}
+
+.boton-contacto:hover {
+  color: #1a0709;
+  font-weight: 800;
 }
 
 </style>

@@ -15,6 +15,7 @@ function ItemManager() {
   const [showFilter, setShowFilter] = useState(false);
   const [items, setItems] = useState([]);
   const [quantity, setQuantity] = useState(0);
+  
   useEffect(() => {
     fetchProductos();
   }, []);
@@ -35,7 +36,6 @@ function ItemManager() {
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem[0] === item[0]
     );
-    console.log(item[1]);
 
     if (existingItemIndex !== -1) {
       let newCart = cart.map((cartItem, index) =>
@@ -51,7 +51,6 @@ function ItemManager() {
       }
     } else {
       setCart([...cart, item]);
-      console.log("No lo encontré");
       toast(`${item[0]} añadido al carrito`);
     }
   };
@@ -64,7 +63,7 @@ function ItemManager() {
   );
 
   return (
-    <div className="contenedor max-md:px-0 px-20">
+    <div className="contenedor max-md:px-0 px-20 bg-[#b9825f] p-10">
       <ToastContainer position="bottom-right" />
       <button className="open-shopiing-cart">
         <Link to="/ShoppingC" className="ShoppingCart space-x-2">

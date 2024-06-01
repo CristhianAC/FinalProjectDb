@@ -14,7 +14,7 @@ const ItemCard = ({ image, name, price, description, addToCart, item }) => {
   }
   useEffect(() => {
     if(cartAdded === true){
-    addToCart([item.nomproducto, value]);
+    addToCart([item.nomproducto, value, item]);
      if (value === 0) 
         setCartAdded(false);
     }

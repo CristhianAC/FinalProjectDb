@@ -10,7 +10,8 @@ const Items = ({ items, addToCart }) => {
                 name={item.nomproducto}
                 price={item.precio}
                 description={item.descrip}
-                addToCart={() => addToCart(item)}
+                item={item}
+                addToCart={addToCart}
                 />
             ))}
         </section>

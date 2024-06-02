@@ -26,7 +26,6 @@ class cliente(models.Model):
     apellido = models.CharField(max_length=100)
     password = models.CharField(max_length=250, null=True, blank=True)
     admin = models.BooleanField(default=False)
-    activo = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if self.password is not None and self.password != '':

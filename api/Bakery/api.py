@@ -1,15 +1,14 @@
-from itertools import count
 from django.shortcuts import get_object_or_404
 from .models import *
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from .serializers import *
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view
 from django.db.models import Count
 from django.db.models.functions import TruncDay
 from django.contrib.auth.hashers import check_password
+from datetime import datetime
+from django.db.models import Sum
 class productoViewSet(viewsets.ModelViewSet):
     queryset = producto.objects.all()
     permission_classes = [
@@ -79,7 +78,6 @@ class clienteViewSet(viewsets.ModelViewSet):
             return Response({'Message':'Se ha creado el usuario'},status=status.HTTP_200_OK)
         else:
             return Response({'Message':'El usuario ya existe'})
-    
 class pedidoViewSet(viewsets.ModelViewSet):
     queryset = pedido.objects.all()
     permission_classes = [
@@ -196,10 +194,32 @@ class entregaViewSet(viewsets.ModelViewSet):
     def pedidos_por_dia(self, request):
         fecha = request.query_params['fecha']
         if not fecha:
-            return Response({"error": "Se requiere un parámetro de 'fecha'"}, status=400)
-        
+            return Response({"error": "Se requiere un parámetro de 'fecha'"}, status=400)        
         queryset = pedido.objects.filter(fecha=fecha).annotate(dia=TruncDay('fecha')).values('dia').annotate(total_pedidos=Count('idpedido'))
         return Response(queryset)
+    @action(detail=False, methods=['get'])
+    def pedidos_en_periodo(self, request):
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_fin = request.query_params.get('fecha_fin')
+        if not fecha_inicio or not fecha_fin:
+            return Response({"error": "Se requieren los parámetros 'fecha_inicio' y 'fecha_fin'"}, status=400)
+
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({"error": "Formato de fecha inválido. Use 'YYYY-MM-DD'."}, status=400)
+
+        total_pedidos = pedido.objects.filter(fecha__range=[fecha_inicio, fecha_fin]).count()
+    @action(detail=False, methods=['get'])
+    def pedidos_por_producto(self, request):
+        # Filtrar productos solo de pedidos que han sido entregados
+        productos_pedidos = carritoproducto.objects.filter(carrito__pedido__estadopedido='entregado')\
+            .values('producto__nomproducto')\
+            .annotate(total_cantidad=Sum('cantidad'))\
+            .order_by('producto__nomproducto')
+        return Response(productos_pedidos)
+    
 class disponibilidadViewSet(viewsets.ModelViewSet):
     queryset = disponibilidad.objects.all()
     permission_classes = [

@@ -32,11 +32,7 @@ class cliente(models.Model):
         if self.password is not None and self.password != '':
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
-class pedido(models.Model):
-    idpedido = models.AutoField(primary_key=True)
-    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
-    estadopedido = models.CharField(max_length=100)
-    fecha = models.DateField()
+
 class telefono(models.Model):
     Numero = models.CharField(max_length=100, primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)    
@@ -53,13 +49,7 @@ class repartidor(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=100)
-class entrega(models.Model):
-    codigoentrega = models.AutoField(primary_key=True)
-    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
-    idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
-    direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
-    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    fecha = models.ForeignKey(fecha, on_delete=models.CASCADE)
+
 class disponibilidad(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
     diasdisp = models.CharField(max_length=150)
@@ -75,6 +65,7 @@ class colarepartidor(models.Model):
     idproducto = models.ForeignKey(producto, on_delete=models.CASCADE)
     cantidad = models.IntegerField()
 class carrito(models.Model):
+    idcarrito = models.AutoField(primary_key=True)
     cliente = models.OneToOneField(cliente, on_delete=models.CASCADE)
     productos = models.ManyToManyField(producto, through='carritoproducto')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -84,3 +75,18 @@ class carritoproducto(models.Model):
     cantidad = models.PositiveIntegerField(default=1)
     class Meta:
         unique_together = ('carrito', 'producto')
+
+class pedido(models.Model):
+    idpedido = models.AutoField(primary_key=True)
+    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
+    idcarrito = models.ForeignKey(carrito, on_delete=models.CASCADE, null=True, blank=True)
+    estadopedido = models.CharField(max_length=100)
+    fecha = models.DateField()
+
+class entrega(models.Model):
+    codigoentrega = models.AutoField(primary_key=True)
+    idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
+    idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
+    direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
+    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
+    fecha = models.ForeignKey(fecha, on_delete=models.CASCADE)

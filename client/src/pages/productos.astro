@@ -1,13 +1,14 @@
 ---
-import Base from '../layouts/Base.astro';
-import Productsexp from '../components/Productsexp.astro';
-import Contact from '../components/Contact.astro';
-import App from '../components/App.jsx';
-
-
+import Base from "../layouts/Base.astro";
+import Contact from "../components/Contact.astro";
+import App from "../components/App.jsx";
+import { getSession } from "auth-astro/server";
+const session = await getSession(Astro.request);
 ---
 
 <Base>
-    <App client:only/>
-    <Contact />
+  <App client:only />
+  <Contact />
 </Base>
+
+

@@ -43,9 +43,9 @@ class clienteViewSet(viewsets.ModelViewSet):
         apellido = request.data.get('apellido')
         password = request.data.get('password')
         correo = request.data.get('correo')
-        clientea = cliente.objects.create(nombre=nombre, apellido=apellido, password=password, admin=False, correo=correo)
+        cliente.objects.create(nombre=nombre, apellido=apellido, password=password, admin=False, correo=correo)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_cliente(self, request):
         idc = request.query_params['idc']
         cliente = get_object_or_404(cliente, idc=idc)
@@ -54,12 +54,12 @@ class clienteViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def check_cliente(self, request):
         correo = request.query_params['correo']
-        clientea = get_object_or_404(cliente, correo=correo)
+        get_object_or_404(cliente, correo=correo)
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])
     def check_password(self, request):
-        password = request.query_params['password']
-        correo = request.query_params['correo']
+        password = request.data.get('password')
+        correo = request.data.get('correo')
         clientecheck = cliente.objects.filter(correo=correo).first()
         if clientecheck.password is None:
             return Response('El usuario no tiene registrado una contraseña')
@@ -67,13 +67,11 @@ class clienteViewSet(viewsets.ModelViewSet):
         return Response('Contraseña correcta' if passwordcompare else 'Contraseña incorrecta')
     @action(detail=False, methods=['post'])
     def google_login(self, request):
-        correo = request.query_params['correo']
-        idc = request.query_params['idc']
-        nombre = request.query_params['nombre']
-        apellido = request.query_params['apellido']
-        activo = request.query_params['activo']
+        correo = request.data.get('correo')
+        nombre = request.data.get('nombre')
+        apellido = request.data.get('apellido')
         if not cliente.objects.filter(correo=correo).exists():
-            cliente.objects.create(idc=idc, correo=correo, nombre=nombre, apellido=apellido, activo=activo)
+            cliente.objects.create(correo=correo, nombre=nombre, apellido=apellido)
             return Response({'Message':'Se ha creado el usuario'},status=status.HTTP_200_OK)
         else:
             return Response({'Message':'El usuario ya existe'})
@@ -83,15 +81,16 @@ class pedidoViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = PedidoSerializer
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_pedido(self, request):
         idc = request.query_params['idc']
         estadopedido = request.query_params['estadopedido']
         fecha = request.query_params['fecha']
+        idcarrito = request.query_params['idcarrito']
         cliente = get_object_or_404(cliente, idc=idc)
-        pedido = pedido.objects.create(idc=cliente, estadopedido=estadopedido, fecha=fecha)
+        pedido.objects.create(idc=cliente, estadopedido=estadopedido, fecha=fecha, idcarrito=idcarrito)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_pedido(self, request):
         idpedido = request.query_params['idpedido']
         pedido = get_object_or_404(pedido, idpedido=idpedido)
@@ -103,14 +102,14 @@ class telefonoViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = TelefonoSerializer
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_telefono(self, request):
         idc = request.query_params['idc']
-        Numero = request.query_params['Numero']
+        numero = request.query_params['numero']
         cliente = get_object_or_404(cliente, idc=idc)
-        telefono = telefono.objects.create(idc=cliente, Numero=Numero)
+        telefono.objects.create(idc=cliente, Numero=numero)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_telefono(self, request):
         Numero = request.query_params['Numero']
         telefono = get_object_or_404(telefono, Numero=Numero)
@@ -123,14 +122,14 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = DireccionEntregaSerializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_direccion(self, request):
         idc = request.query_params['idc']
         direccion = request.query_params['direccion']
         cliente = get_object_or_404(cliente, idc=idc)
-        direccion = direccionentrega.objects.create(idc=cliente, direccion=direccion)
+        direccionentrega.objects.create(idc=cliente, direccion=direccion)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_direccion(self, request):
         codigodireccion = request.query_params['codigodireccion']
         direccion = get_object_or_404(direccionentrega, codigodireccion=codigodireccion)
@@ -149,14 +148,14 @@ class repartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = RepartidorSerializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_repartidor(self, request):
         nombre = request.query_params['nombre']
         apellido = request.query_params['apellido']
         telefono = request.query_params['telefono']
-        repartidor = repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono)
+        repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_repartidor(self, request):
         idr = request.query_params['idr']
         repartidor = get_object_or_404(repartidor, idr=idr)
@@ -168,7 +167,7 @@ class entregaViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = EntregaSerializer
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_entrega(self, request):
         idc = request.query_params['idc']
         idpedido = request.query_params['idpedido']
@@ -180,9 +179,9 @@ class entregaViewSet(viewsets.ModelViewSet):
         direccion = get_object_or_404(direccionentrega, direccion=direccion)
         repartidor = get_object_or_404(repartidor, idr=idr)
         fecha = get_object_or_404(fecha, idfecha=idfecha)
-        entrega = entrega.objects.create(idc=cliente, idpedido=pedido, direccion=direccion, idr=repartidor, fecha=fecha)
+        entrega.objects.create(idc=cliente, idpedido=pedido, direccion=direccion, idr=repartidor, fecha=fecha)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_entrega(self, request):
         codigoentrega = request.query_params['codigoentrega']
         entrega = get_object_or_404(entrega, codigoentrega=codigoentrega)
@@ -225,15 +224,15 @@ class disponibilidadViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = DisponibilidadSerializer
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_disponibilidad(self, request):
         idr = request.query_params['idr']
         diasdisp = request.query_params['diasdisp']
         horasdisp = request.query_params['horasdisp']
         repartidor = get_object_or_404(repartidor, idr=idr)
-        disponibilidad = disponibilidad.objects.create(idr=repartidor, diasdisp=diasdisp, horasdisp=horasdisp)
+        disponibilidad.objects.create(idr=repartidor, diasdisp=diasdisp, horasdisp=horasdisp)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_disponibilidad(self, request):
         idr = request.query_params['idr']
         disponibilidad = get_object_or_404(disponibilidad, idr=idr)
@@ -246,16 +245,16 @@ class mediotranspViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = MedioTranspSerializer
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar_mediotransp(self, request):
         idr = request.query_params['idr']
         vehiculo = request.query_params['vehiculo']
         fechavenci = request.query_params['fechavenci']
         licencia = request.query_params['licencia']
         repartidor = get_object_or_404(repartidor, idr=idr)
-        mediotransp = mediotransp.objects.create(idr=repartidor, vehiculo=vehiculo, fechavenci=fechavenci, licencia=licencia)
+        mediotransp.objects.create(idr=repartidor, vehiculo=vehiculo, fechavenci=fechavenci, licencia=licencia)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar_mediotransp(self, request):
         idr = request.query_params['idr']
         mediotransp = get_object_or_404(mediotransp, idr=idr)
@@ -268,7 +267,7 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = colaRepartidorSerializer
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def agregar(self, request, pk=None):
         repartidor_id = request.query_params['idr']
         try:    
@@ -278,7 +277,7 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/eliminar/
-    @action(detail=True, methods=['delete'])
+    @action(detail=False, methods=['delete'])
     def eliminar(self, request, pk=None):
         idr = request.query_params['idr']
         try:
@@ -292,7 +291,7 @@ class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer
     lookup_field = 'pk'
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def add_item(self, request, pk=None):
         carrito = self.get_object()
         producto_id = request.query_params['idp']
@@ -316,7 +315,7 @@ class carritoViewSet(viewsets.ModelViewSet):
         serializer = CarritoProductoSerializer(carrito_producto)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def remove_item(self, request, pk=None):
         carrito = self.get_object()
         producto_id = request.data.get('producto_id')

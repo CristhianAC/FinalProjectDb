@@ -1,9 +1,15 @@
 ---
 import { SignIn, SignOut } from "auth-astro/components";
 import { getSession } from "auth-astro/server";
+import {getClienteGoogle} from "./API/Conexion-api";
 const session = await getSession(Astro.request);
+if (session?.user) {
+  const cliente = await getClienteGoogle(session.user.email, session.user.name);
+  console.log(cliente)
+}
 
 import Register from "./Register.astro";
+
 ---
 
 <header>
@@ -132,7 +138,7 @@ import Register from "./Register.astro";
 
 <Register />
 <script>
-  
+  import { validateClient } from "./API/Conexion-api";
   // Definir HTML elementos para validar typescript
   const getElement = <T extends HTMLElement>(id: string): T | null =>
     document.getElementById(id) as T | null;
@@ -149,7 +155,7 @@ import Register from "./Register.astro";
     const signUpLink = getElement<HTMLAnchorElement>("sign-up-link");
     const signUpModal = getElement<HTMLDivElement>("sign-up-modal");
     const loginForm = getElement<HTMLFormElement>("login-form");
-
+    
     // abrir y cerrar menu de usuario
     userMenuToggle?.addEventListener("click", () => {
       if (userMenu) {
@@ -216,24 +222,18 @@ import Register from "./Register.astro";
 
         if (typeof email === "string" && typeof password === "string") {
           try {
-            const response = await fetch("/api/login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email, password }),
-            });
+            const response = await validateClient(email, password);
 
-            if (response.ok) {
-              const data = await response.json();
+            if (response) {
+              const data = await response.data.json();
               alert("Inicio de sesión exitoso");
               if (loginModal) {
                 loginModal.style.display = "none";
               }
               window.location.reload();
             } else {
-              const error = await response.json();
-              alert(`Error: ${error.message}`);
+              const error = response;
+              alert(`Error: ${error}`);
             }
           } catch (error) {
             alert(`Error: ${error instanceof Error ? error.message : error}`);

@@ -266,10 +266,8 @@ import { addCliente } from "./API/Conexion-api.js";
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
-        console.log(email)
-        console.log(password)
-        console.log(name)
         
+
         try {
         
           await addCliente(email, password, name);

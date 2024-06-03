@@ -7,7 +7,7 @@ const session = await getSession(Astro.request);
 ---
 
 <Base>
-  <App client:only />
+  <App client:only session={session} />
   <Contact />
 </Base>
 

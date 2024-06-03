@@ -6,8 +6,10 @@ import { getProducts } from "./API/Conexion-api";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { addCarrito } from "./API/Conexion-api";
+import { getSession } from "auth-astro/server";
 
-function ItemManager() {
+function ItemManager(session) {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState(0);
@@ -15,6 +17,7 @@ function ItemManager() {
   const [showFilter, setShowFilter] = useState(false);
   const [items, setItems] = useState([]);
   const [quantity, setQuantity] = useState(0);
+
   
   useEffect(() => {
     fetchProductos();
@@ -31,7 +34,11 @@ function ItemManager() {
       console.error(error);
     }
   };
-
+  const addToCartDb = async () => {
+    
+    console.log(session.name);
+    addCarrito("cristhianholad@gmail.com", cart);
+  }
   const addToCart = (item) => {
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem[0] === item[0]
@@ -39,7 +46,7 @@ function ItemManager() {
 
     if (existingItemIndex !== -1) {
       let newCart = cart.map((cartItem, index) =>
-        index === existingItemIndex ? [cartItem[0], item[1]] : cartItem
+        index === existingItemIndex ? [cartItem[0], item[1], item[2]] : cartItem
       );
       newCart = newCart.filter(i => i[1] !== 0);
 
@@ -66,7 +73,7 @@ function ItemManager() {
     <div className="contenedor max-md:px-0 px-20 bg-[#b9825f] p-10">
       <ToastContainer position="bottom-right" />
       <button className="open-shopiing-cart">
-        <Link to="/ShoppingC" className="ShoppingCart space-x-2">
+        <Link to="/ShoppingC" onClick={addToCartDb} className="ShoppingCart space-x-2">
           <i className="fas fa-shopping-cart"></i>
           <span>{quantity}</span>
         </Link>

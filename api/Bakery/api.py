@@ -328,7 +328,7 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
             carrito_cliente = carrito.objects.create(cliente=clientea)
         productoa = get_object_or_404(producto, idp=producto_id)
 
-        carrito_producto = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
+        carrito_producto, created = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
         carrito_producto.cantidad = int(cantidad)
 
         carrito_producto.save()

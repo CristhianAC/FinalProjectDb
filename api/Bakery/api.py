@@ -34,8 +34,9 @@ class productoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def pedirProducto(self, request):
         idp = request.query_params['idp']
-        producto = get_object_or_404(producto, idp=idp)
-        return Response(producto)
+        productoa = get_object_or_404(producto, idp=idp)  # Use the model here, not the serializer
+        serializer = ProductoSerializer(productoa)  # Then use the serializer to serialize the model instance
+        return Response(serializer.data)
 class clienteViewSet(viewsets.ModelViewSet):
     queryset = cliente.objects.all()
     permission_classes = [

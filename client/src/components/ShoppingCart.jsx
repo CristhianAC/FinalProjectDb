@@ -1,21 +1,32 @@
 import { Link } from "react-router-dom";
 import CartItems from "./CartItems";
 import { useEffect, useState } from "react";
-import { getCarrito } from "./API/Conexion-api";
+import { getCarrito, getProductDetails } from "./API/Conexion-api";
+
 
 const ShoppingC = ({ session }) => {
   const [shoppingCart, setShoppingCart] = useState([]);
-  
+
   useEffect(() => {
     const fetchCart = async () => {
-      if (session && session.user.email) {
-        const cart = await getCarrito(session.user.email);
-        setShoppingCart(cart);
-        console.log("hola", cart)
+      if (session && session.email) {
+        try {
+          const cartData = await getCarrito(session.email);
+          const productDetails = await Promise.all(
+            cartData.productos.map(async (item) => {
+              const response = await getProductDetails(item.producto);
+              const product = response.data;
+              return { ...item, product };
+            })
+          );
+          setShoppingCart(productDetails);
+        } catch (error) {
+          console.error('Error fetching cart:', error);
+        }
       }
     };
     fetchCart();
-  }, []);
+  }, [session]);
 
   return (
     <div className="shopping-cart-container">

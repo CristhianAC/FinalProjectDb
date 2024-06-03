@@ -14,12 +14,12 @@ const CartItems = ({ carrito }) => {
               <div key={index} className="flex flex-col justify-center items-center space-y-4 p-4 border rounded-lg shadow-2xl shadow-black/40">
                 <div className="w-34 h-28 flex justify-center items-center overflow-hidden">
                   {product.imagen && (
-                    <img src={product.imagen} alt={product.nomProduct || 'Product Image'} className="object-contain h-full w-full" />
+                    <img src={product.imagen} alt={product.nomproducto || 'Product Image'} className="object-contain h-full w-full" />
                   )}
                 </div>
-                <h4 className="font-bold">{product.nomProduct || 'Nombre del producto'}</h4>
-                <p>{product.description || 'Descripción del producto'}</p>
-                <p>Precio: {product.price ? `${product.price} COP` : 'Precio no disponible'}</p>
+                <h4 className="font-bold">{product.nomproducto || 'Nombre del producto'}</h4>
+                <p>{product.descrip || 'Descripción del producto'}</p>
+                <p>Precio: {product.precio ? `${product.precio} COP` : 'Precio no disponible'}</p>
               </div>
             );
           })

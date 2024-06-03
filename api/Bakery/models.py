@@ -72,7 +72,7 @@ class carrito(models.Model):
 class carritoproducto(models.Model):
     carrito = models.ForeignKey(carrito, on_delete=models.CASCADE)
     producto = models.ForeignKey(producto, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField(default=1)
+    cantidad = models.PositiveIntegerField()
     class Meta:
         unique_together = ('carrito', 'producto')
 

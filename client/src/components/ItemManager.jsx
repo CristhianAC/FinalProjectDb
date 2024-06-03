@@ -22,6 +22,7 @@ function ItemManager({ session }) {
 
   useEffect(() => {
     setQuantity(cart.reduce((acc, [, value]) => acc + value, 0));
+    console.log(cart);
     if (cart.length > 0) {
       addCarrito(session.user.email, cart)
         .then(response => {
@@ -71,7 +72,7 @@ function ItemManager({ session }) {
       let newCart = cart.map((cartItem, index) =>
         index === existingItemIndex ? [cartItem[0], item[1], item[2]] : cartItem
       );
-      newCart = newCart.filter((i) => i[1] !== 0);
+      
 
       if (newCart.length === 0) {
         setCart([]);

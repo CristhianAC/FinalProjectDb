@@ -328,21 +328,22 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
         clientea = get_object_or_404(cliente, correo=cliente_correo)
         producto_id = request.data.get('producto_id')
         cantidad = request.data.get('cantidad')
-        if int(cantidad) == 0:
-            return Response({"error": "La cantidad no puede ser 0"}, status=status.HTTP_400_BAD_REQUEST)
+            
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         if not carrito_cliente:
             carrito_cliente = carrito.objects.create(cliente=clientea)
         productoa = get_object_or_404(producto, idp=producto_id)
 
         carrito_producto, created = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
-        carrito_producto.cantidad = int(cantidad)
+        if int(cantidad) > 0:
+            carrito_producto.cantidad = int(cantidad)
+            carrito_producto.save()
+            serializer = CarritoProductoSerializer(carrito_producto)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        elif int(cantidad) == 0:
+            carrito_producto.delete()
+            return Response({"error": "La cantidad no puede ser 0"}, status=status.HTTP_400_BAD_REQUEST)
         
-            #carrito_producto.delete()
-            
-        carrito_producto.save()
-        serializer = CarritoProductoSerializer(carrito_producto)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
     @action(detail=False, methods=['put'])
     def remove_item(self, request):
         cliente_correo = request.data.get('correo')

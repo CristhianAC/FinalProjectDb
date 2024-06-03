@@ -8,6 +8,6 @@ export const addCliente = (email, password, nombre) =>
       correo: email,
       password: password,
       nombre: nombre,
-      apellido: "f",
+    
       
     });

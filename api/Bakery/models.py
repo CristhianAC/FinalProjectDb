@@ -65,8 +65,9 @@ class colarepartidor(models.Model):
     cantidad = models.IntegerField()
 class carrito(models.Model):
     idcarrito = models.AutoField(primary_key=True)
-    cliente = models.OneToOneField(cliente, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
     productos = models.ManyToManyField(producto, through='carritoproducto')
+    comprado = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 class carritoproducto(models.Model):
     carrito = models.ForeignKey(carrito, on_delete=models.CASCADE)

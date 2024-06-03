@@ -2,9 +2,12 @@
 import Base from '../layouts/Base.astro';
 import App from 'src/components/App';
 import Contact from '../components/Contact.astro';
+import { getSession } from "auth-astro/server";
+const session = await getSession(Astro.request);
+
 ---
 
 <Base>
- <App client:only />
+ <App client:only session={session} />
  <Contact />
 </Base>

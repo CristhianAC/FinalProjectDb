@@ -335,6 +335,7 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
         productoa = get_object_or_404(producto, idp=producto_id)
 
         carrito_producto, created = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
+        
         if int(cantidad) > 0:
             carrito_producto.cantidad = int(cantidad)
             carrito_producto.save()
@@ -342,7 +343,7 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif int(cantidad) == 0:
             carrito_producto.delete()
-            return Response({"error": "La cantidad no puede ser 0"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
         
     @action(detail=False, methods=['put'])
     def remove_item(self, request):

@@ -319,8 +319,8 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def add_item(self, request):
         #cambiar params a get
-        cliente_id = request.data.get('correo')
-        clientea = get_object_or_404(cliente, correo=cliente_id)
+        cliente_correo = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=cliente_correo)
         producto_id = request.data.get('producto_id')
         cantidad = request.data.get('cantidad')
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()

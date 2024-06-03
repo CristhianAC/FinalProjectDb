@@ -299,6 +299,15 @@ class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer
     lookup_field = 'pk'
+
+    @action(detail=False, methods=['put'])
+    def comprar(self, request):
+        cliente_correo = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=cliente_correo)
+        carrito_cliente = get_object_or_404(carrito, cliente=clientea.idc, comprado=False)
+        carrito_cliente.comprado = True
+        carrito_cliente.save()
+        return Response(status=status.HTTP_200_OK)
 class carritoproductoViewSet(viewsets.ModelViewSet):
     queryset = carritoproducto.objects.all()
     serializer_class = CarritoProductoSerializer
@@ -310,11 +319,11 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def add_item(self, request):
         #cambiar params a get
-        cliente_id = request.query_params['cliente_id']
-        clientea = get_object_or_404(cliente, idc=cliente_id)
-        producto_id = request.query_params['producto_id']
-        cantidad = request.query_params['cantidad']
-        carrito_cliente = carrito.objects.filter(cliente=cliente_id, comprado=False).first()
+        cliente_id = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=cliente_id)
+        producto_id = request.data.get('producto_id')
+        cantidad = request.data.get('cantidad')
+        carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         if not carrito_cliente:
             carrito_cliente = carrito.objects.create(cliente=clientea)
         
@@ -332,11 +341,8 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     def remove_item(self, request):
         cliente_id = request.query_params['cliente_id']
         producto_id = request.query_params['producto_id']
-
         carritoa = get_object_or_404(carrito, id=cliente_id)
         productoa = get_object_or_404(producto, idp=producto_id)
-
         carrito_producto = get_object_or_404(carritoproducto, carrito=carritoa, producto=productoa)
         carrito_producto.delete()
-
         return Response(status=status.HTTP_204_NO_CONTENT)

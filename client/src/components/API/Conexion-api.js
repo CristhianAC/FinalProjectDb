@@ -33,9 +33,14 @@ export const agregarItem = (correo, idItem, cantidad) =>
         cantidad: cantidad
     }
   );
-  
+
 export const addCarrito = (correo,Carrito) => {
     Carrito.forEach(element => {
         agregarItem(correo, element[2].idp, element[1]);
     });
 }
+
+export const getCarrito = (correo) => 
+  axios.get(
+    `https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/carritoproducto/get_carrito/?correo=${correo}`
+  );

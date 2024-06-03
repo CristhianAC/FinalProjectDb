@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import CartItems from "./CartItems";
+import { useEffect } from "react";
 
-const ShoppingC = ({ cart }) => {
+const ShoppingC = ({ session }) => {
   // Ensure cart is defined and is an array
-  const shoppingCart = cart || [];
+  useEffect(() => {
+    
+  }, []);
 
   return (
     <div className="shopping-cart-container">

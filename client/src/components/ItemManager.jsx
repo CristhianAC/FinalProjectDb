@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addCarrito } from "./API/Conexion-api";
-import { getSession } from "auth-astro/server";
 
-function ItemManager(session) {
+
+function ItemManager({session}) {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState(0);
@@ -23,7 +23,10 @@ function ItemManager(session) {
     fetchProductos();
   }, []);
   useEffect(() => {
+    
     setQuantity(cart.reduce((acc, [, value]) => acc + value, 0));
+    
+    addCarrito(session.user.email, cart);
   }, [cart]);
   const fetchProductos = async () => {
     try {
@@ -34,11 +37,7 @@ function ItemManager(session) {
       console.error(error);
     }
   };
-  const addToCartDb = async () => {
-    
-    console.log(session.name);
-    addCarrito("cristhianholad@gmail.com", cart);
-  }
+  
   const addToCart = (item) => {
     const existingItemIndex = cart.findIndex(
       (cartItem) => cartItem[0] === item[0]
@@ -73,7 +72,7 @@ function ItemManager(session) {
     <div className="contenedor max-md:px-0 px-20 bg-[#b9825f] p-10">
       <ToastContainer position="bottom-right" />
       <button className="open-shopiing-cart">
-        <Link to="/ShoppingC" onClick={addToCartDb} className="ShoppingCart space-x-2">
+        <Link to="/ShoppingC" className="ShoppingCart space-x-2">
           <i className="fas fa-shopping-cart"></i>
           <span>{quantity}</span>
         </Link>

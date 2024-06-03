@@ -20,10 +20,10 @@ class producto(models.Model):
     descrip = models.TextField(default='')
     imagen = models.URLField(default='')
 class cliente(models.Model):
-    idc = models.TextField(primary_key=True)
+    idc = models.AutoField(primary_key=True)
     correo = models.EmailField(unique = True)
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100, null=True, blank=True)
     password = models.CharField(max_length=250, null=True, blank=True)
     admin = models.BooleanField(default=False)
 

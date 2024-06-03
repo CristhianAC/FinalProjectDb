@@ -220,7 +220,8 @@ import { SignIn } from "auth-astro/components";
 
 
 <script>
-  import { addCliente } from "./API/Conexion-api.js";
+  import { toast } from "react-toastify";
+import { addCliente } from "./API/Conexion-api.js";
 
   document.addEventListener("DOMContentLoaded", function () {
     const getElement = <T extends HTMLElement>(id: string): T | null =>
@@ -265,8 +266,12 @@ import { SignIn } from "auth-astro/components";
         const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
-
+        console.log(email)
+        console.log(password)
+        console.log(name)
+        
         try {
+        
           await addCliente(email, password, name);
           alert("Usuario creado con éxito");
           if (signUpModal) {

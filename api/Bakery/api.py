@@ -39,12 +39,12 @@ class clienteViewSet(viewsets.ModelViewSet):
     serializer_class = ClienteSerializer  
     @action(detail=False, methods=['post'])
     def agregar_cliente(self, request):
-        idc = request.query_params['idc']
+        
         nombre = request.query_params['nombre']
         apellido = request.query_params['apellido']
         password = request.query_params['password']
         correo = request.query_params['correo']
-        clientea = cliente.objects.create(idc=idc, nombre=nombre, apellido=apellido, password=password, admin=False, correo=correo)
+        clientea = cliente.objects.create( nombre=nombre, apellido=apellido, password=password, admin=False, correo=correo)
         return Response(status=status.HTTP_200_OK)
     @action(detail=True, methods=['delete'])
     def eliminar_cliente(self, request):

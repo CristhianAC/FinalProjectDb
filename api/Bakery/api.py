@@ -39,8 +39,12 @@ class clienteViewSet(viewsets.ModelViewSet):
     serializer_class = ClienteSerializer  
     @action(detail=False, methods=['post'])
     def agregar_cliente(self, request):
-        nombre = request.data.get('nombre')
-        apellido = request.data.get('apellido')
+        nombre_completo = request.data.get('nombre')
+        if not nombre_completo:
+            return Response({'error': 'Nombre completo es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        partes = nombre_completo.split(maxsplit=1)
+        nombre = partes[0]
+        apellido = partes[1] if len(partes) > 1 else ''
         password = request.data.get('password')
         correo = request.data.get('correo')
         cliente.objects.create(nombre=nombre, apellido=apellido, password=password, admin=False, correo=correo)
@@ -68,8 +72,12 @@ class clienteViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def google_login(self, request):
         correo = request.data.get('correo')
-        nombre = request.data.get('nombre')
-        apellido = request.data.get('apellido')
+        nombre_completo = request.data.get('nombre')
+        if not nombre_completo:
+            return Response({'error': 'Nombre completo es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        partes = nombre_completo.split(maxsplit=1)
+        nombre = partes[0]
+        apellido = partes[1] if len(partes) > 1 else ''
         if not cliente.objects.filter(correo=correo).exists():
             cliente.objects.create(correo=correo, nombre=nombre, apellido=apellido)
             return Response({'Message':'Se ha creado el usuario'},status=status.HTTP_200_OK)

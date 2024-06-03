@@ -326,23 +326,35 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         if not carrito_cliente:
             carrito_cliente = carrito.objects.create(cliente=clientea)
-        
         productoa = get_object_or_404(producto, idp=producto_id)
 
-        carrito_producto, created = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
-        if not created:
-            carrito_producto.cantidad += int(cantidad)
-        else:
-            carrito_producto.cantidad += int(cantidad)
+        carrito_producto = carritoproducto.objects.get_or_create(carrito=carrito_cliente, producto=productoa)
+        carrito_producto.cantidad = int(cantidad)
+
         carrito_producto.save()
         serializer = CarritoProductoSerializer(carrito_producto)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    @action(detail=False, methods=['delete'])
+    
+    @action(detail=False, methods=['put'])
     def remove_item(self, request):
-        cliente_id = request.query_params['cliente_id']
-        producto_id = request.query_params['producto_id']
-        carritoa = get_object_or_404(carrito, id=cliente_id)
+        cliente_correo = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=cliente_correo)
+        producto_id = request.data.get('producto_id')
+        cantidad = request.data.get('cantidad')
+        carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
+        if not carrito_cliente:
+            return Response({"error": "No se encontró el carrito del cliente"}, status=status.HTTP_404_NOT_FOUND)
         productoa = get_object_or_404(producto, idp=producto_id)
-        carrito_producto = get_object_or_404(carritoproducto, carrito=carritoa, producto=productoa)
-        carrito_producto.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        try:
+            carrito_producto = carritoproducto.objects.get(carrito=carrito_cliente, producto=productoa)
+            carrito_producto.cantidad -= int(cantidad)
+            if carrito_producto.cantidad <= 0:
+                carrito_producto.delete()
+            else:
+                carrito_producto.save()
+            serializer = CarritoProductoSerializer(carrito_producto)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except carritoproducto.DoesNotExist:
+            return Response({"error": "No se encontró el producto en el carrito"}, status=status.HTTP_404_NOT_FOUND)
+        

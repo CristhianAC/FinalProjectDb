@@ -8,16 +8,21 @@ const CartItems = ({ carrito }) => {
     <div>
       <div className="flex flex-col justify-center items-center space-y-4">
         {cartItems.length > 0 ? (
-          cartItems.map((item, index) => (
-            <div key={index} className="flex flex-col justify-center items-center space-y-4">
-              <div className="w-34 h-28 justify-center items-center overflow-hidden shadow-2xl shadow-black/40">
-                <img src={item[2].imagen} alt={item[2].name} className="object-contain" />
+          cartItems.map((item, index) => {
+            const product = item.product || {};
+            return (
+              <div key={index} className="flex flex-col justify-center items-center space-y-4 p-4 border rounded-lg shadow-2xl shadow-black/40">
+                <div className="w-34 h-28 flex justify-center items-center overflow-hidden">
+                  {product.imagen && (
+                    <img src={product.imagen} alt={product.nomProduct || 'Product Image'} className="object-contain h-full w-full" />
+                  )}
+                </div>
+                <h4 className="font-bold">{product.nomProduct || 'Nombre del producto'}</h4>
+                <p>{product.description || 'Descripción del producto'}</p>
+                <p>Precio: {product.price ? `${product.price} COP` : 'Precio no disponible'}</p>
               </div>
-              <h4 className="font-bold">{item[2].nomProduct}</h4>
-              <p>{item[2].description}</p>
-              <p>Precio: {item[2].price} COP</p>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p>No hay items en el carrito</p>
         )}

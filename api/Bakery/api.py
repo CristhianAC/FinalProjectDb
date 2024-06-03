@@ -31,6 +31,11 @@ class productoViewSet(viewsets.ModelViewSet):
         imagen = request.query_params['imagen']
         producto = producto.objects.create(categoria=categoria, nomproducto=nomproducto, precio=precio, descrip=descrip, imagen=imagen)
         return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def pedirProducto(self, request):
+        idp = request.query_params['idp']
+        producto = get_object_or_404(producto, idp=idp)
+        return Response(producto)
 class clienteViewSet(viewsets.ModelViewSet):
     queryset = cliente.objects.all()
     permission_classes = [

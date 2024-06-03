@@ -42,5 +42,5 @@ export const addCarrito = (correo,Carrito) => {
 
 export const getCarrito = (correo) => 
   axios.get(
-    `https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/carritoproducto/get_carrito/?correo=${correo}`
+    `https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/carritoproducto/get_cart/?correo=${correo}`
   );

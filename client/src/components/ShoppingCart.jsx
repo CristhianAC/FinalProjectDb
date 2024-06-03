@@ -1,11 +1,20 @@
 import { Link } from "react-router-dom";
 import CartItems from "./CartItems";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getCarrito } from "./API/Conexion-api";
 
 const ShoppingC = ({ session }) => {
-  // Ensure cart is defined and is an array
+  const [shoppingCart, setShoppingCart] = useState([]);
+  
   useEffect(() => {
-    
+    const fetchCart = async () => {
+      if (session && session.user.email) {
+        const cart = await getCarrito(session.user.email);
+        setShoppingCart(cart);
+        console.log("hola", cart)
+      }
+    };
+    fetchCart();
   }, []);
 
   return (

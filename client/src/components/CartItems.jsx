@@ -36,7 +36,7 @@ const CartItems = ({ carrito,session }) => {
         })
         
       ) : (
-        <p className="text-red-600 font-semibold">No hay items en el carrito</p>
+        <p className="text-red-600 font-semibold">No hay productos en el carrito</p>
       )}
       {cartItems.length > 0 && (<div className='flex justify-center'>
         <input type="text" className="border rounded-lg p-2" placeholder="Dirección de envío"/>

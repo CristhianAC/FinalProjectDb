@@ -1,8 +1,11 @@
 import React from 'react';
-
-const CartItems = ({ carrito }) => {
+import { makePetition } from './API/Conexion-api';
+const CartItems = ({ carrito,session }) => {
   const cartItems = carrito || [];
-
+  const makeAPayment = async () => {
+    
+    await makePetition(session?.user?.email);
+  }
   return (
     <div className="flex flex-col items-center space-y-4">
       {cartItems.length > 0 ? (
@@ -31,10 +34,15 @@ const CartItems = ({ carrito }) => {
             </div>
           );
         })
+        
       ) : (
         <p className="text-red-600 font-semibold">No hay items en el carrito</p>
       )}
-    </div>
+      {cartItems.length > 0 && (<div className='flex justify-center'>
+        <input type="text" className="border rounded-lg p-2" placeholder="Dirección de envío"/>
+        <button className="btn bg-blue-600 text-white rounded-lg p-2" onClick={makeAPayment}>Comprar</button>
+      </div>)}
+    </div>  
   );
 };
 

@@ -53,3 +53,9 @@ export const getCarrito = async (correo) => {
 
 export const getProductDetails = (idp) =>
   axios.get(`https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/producto/pedirProducto/?idp=${idp}`);
+
+
+export const makePetition = (correo) =>
+  axios.post("https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/pedido/agregar_pedido/", {
+    correo: correo,
+  });

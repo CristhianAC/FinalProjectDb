@@ -158,7 +158,7 @@ class telefonoViewSet(viewsets.ModelViewSet):
         telefono.delete()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])
-    def pedir_telefono(self, request):
+    def get_telefono(self, request):
         numero = request.query_params['correo']
         clientea = get_object_or_404(cliente, correo=numero)
         telefonos = telefono.objects.filter(idc=clientea.idc)
@@ -186,7 +186,7 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
     #Que se pida correo y de todas las idreccion 
     @action(detail=False, methods=['get'])
-    def pedir_direccion(self, request):
+    def get_direcciones(self, request):
         correo = request.query_params['correo']
         clientea = get_object_or_404(cliente, correo=correo)
         direcciones = direccionentrega.objects.filter(idc=clientea.idc)

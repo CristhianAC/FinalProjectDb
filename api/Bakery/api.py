@@ -97,12 +97,28 @@ class pedidoViewSet(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
     @action(detail=False, methods=['post'])
     def agregar_pedido(self, request):
-        idc = request.query_params['idc']
-        estadopedido = request.query_params['estadopedido']
-        fecha = request.query_params['fecha']
-        idcarrito = request.query_params['idcarrito']
-        cliente = get_object_or_404(cliente, idc=idc)
-        pedido.objects.create(idc=cliente, estadopedido=estadopedido, fecha=fecha, idcarrito=idcarrito)
+        #QUe agarre correo, agarre el carrito activo, cambie el estado
+        #que agarre numero y direccion y que lo cree si no existe
+        #poner estado pedido en activo
+        correo_cliente = request.data.get('correo')
+        numero = request.data.get('numero')
+        direccion = request.data.get('direccion')
+        clientea = get_object_or_404(cliente, correo=correo_cliente)
+        numero, created = telefono.objects.get_or_create(idc=clientea, numero=numero)
+        direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
+        carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
+        carrito_cliente.comprado = True
+        carrito_cliente.save()
+        pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+        return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['put'])
+    def entregar_pedido(self, request):
+        correoa = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=correoa)
+        pedido_cliente = pedido.objects.filter(idc=clientea.idc, entregado=False).first()
+        pedido_cliente.entregado = True
+        pedido_cliente.fechafin = datetime.now()
+        pedido_cliente.save()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['delete'])
     def eliminar_pedido(self, request):
@@ -149,12 +165,6 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
         direccion = get_object_or_404(direccionentrega, codigodireccion=codigodireccion)
         direccion.delete()
         return Response(status=status.HTTP_200_OK)
-class fechaViewSet(viewsets.ModelViewSet):
-    queryset = fecha.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = FechaSerializer
 class repartidorViewSet(viewsets.ModelViewSet):
     queryset = repartidor.objects.all()
     permission_classes = [
@@ -231,7 +241,6 @@ class entregaViewSet(viewsets.ModelViewSet):
             .annotate(total_cantidad=Sum('cantidad'))\
             .order_by('producto__nomproducto')
         return Response(productos_pedidos)
-    
 class disponibilidadViewSet(viewsets.ModelViewSet):
     queryset = disponibilidad.objects.all()
     permission_classes = [
@@ -344,7 +353,6 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
         elif int(cantidad) == 0:
             carrito_producto.delete()
             return Response(status=status.HTTP_200_OK)
-        
     @action(detail=False, methods=['put'])
     def remove_item(self, request):
         cliente_correo = request.data.get('correo')
@@ -370,9 +378,8 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_cart(self, request):
         cliente_correo = request.query_params.get('correo')
-        clientea, created = cliente.objects.get_or_create(correo=cliente_correo)
+        clientea = get_object_or_404(cliente, correo=cliente_correo)
+        carritoa, created = carrito.objects.get_or_create(cliente = clientea)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
-        if not carrito_cliente:
-            return Response({"error": "No se encontró el carrito del cliente"}, status=status.HTTP_404_NOT_FOUND)
         serializer = CarritoSerializer(carrito_cliente)
         return Response(serializer.data, status=status.HTTP_200_OK)

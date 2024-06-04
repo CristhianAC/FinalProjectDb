@@ -56,7 +56,7 @@ class mediotransp(models.Model):
     licencia = models.CharField(max_length=100)
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    n = models.AutoField()
+    n = models.PositiveIntegerField()
 class carrito(models.Model):
     idcarrito = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)

@@ -33,10 +33,6 @@ class EntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = entrega
         fields = '__all__'
-class DisponibilidadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = disponibilidad
-        fields = '__all__'
 class MedioTranspSerializer(serializers.ModelSerializer):
     class Meta:
         model = mediotransp

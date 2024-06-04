@@ -370,7 +370,7 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_cart(self, request):
         cliente_correo = request.query_params.get('correo')
-        clientea = get_object_or_404(cliente, correo=cliente_correo)
+        clientea, created = cliente.objects.get_or_create(correo=cliente_correo)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         if not carrito_cliente:
             return Response({"error": "No se encontró el carrito del cliente"}, status=status.HTTP_404_NOT_FOUND)

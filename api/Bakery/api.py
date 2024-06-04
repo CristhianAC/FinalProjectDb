@@ -107,11 +107,11 @@ class pedidoViewSet(viewsets.ModelViewSet):
         direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         carrito_cliente.comprado = True
-        #Si es entrega, que se cree
         carrito_cliente.save()
         if pickup == True:
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
             #Condicional para ver si hay repartidor en cola
+
             entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
         else:
             pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
@@ -196,6 +196,7 @@ class repartidorViewSet(viewsets.ModelViewSet):
         idr = get_object_or_404(repartidor, correo=correo)
         repartidora = get_object_or_404(repartidor, idr=idr)
         repartidora.activo = True
+        colarepartidor.objects.create(idr=repartidora)
         repartidora.save()
         return Response(status=status.HTTP_200_OK)
 class entregaViewSet(viewsets.ModelViewSet):
@@ -283,10 +284,7 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = colaRepartidorSerializer
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
-    #Si entra y hay pedido en null, que lo asigne, si no, que vaya cola
-    @action(detail=False, methods=['post'])
-    def agregar_repartidor(self, request):
-        correo = request.data.get('correo')
+
 class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer

@@ -56,7 +56,7 @@ class mediotransp(models.Model):
     licencia = models.CharField(max_length=100)
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    n = models.PositiveIntegerField(validators=[validate_positive])
+    n = models.AutoField()
 class carrito(models.Model):
     idcarrito = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
@@ -80,4 +80,4 @@ class entrega(models.Model):
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
     direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
-    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
+    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE, null = True, blank = True)

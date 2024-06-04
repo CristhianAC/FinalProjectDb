@@ -184,6 +184,14 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
         direccion = get_object_or_404(direccionentrega, codigodireccion=codigodireccion)
         direccion.delete()
         return Response(status=status.HTTP_200_OK)
+    #Que se pida correo y de todas las idreccion 
+    @action(detail=False, methods=['get'])
+    def pedir_direccion(self, request):
+        correo = request.query_params['correo']
+        clientea = get_object_or_404(cliente, correo=correo)
+        direcciones = direccionentrega.objects.filter(idc=clientea.idc)
+        serializer = DireccionEntregaSerializer(direcciones, many=True)
+        return Response(serializer.data)
 class repartidorViewSet(viewsets.ModelViewSet):
     queryset = repartidor.objects.all()
     permission_classes = [

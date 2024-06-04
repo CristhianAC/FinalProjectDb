@@ -97,19 +97,25 @@ class pedidoViewSet(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
     @action(detail=False, methods=['post'])
     def agregar_pedido(self, request):
-        #QUe agarre correo, agarre el carrito activo, cambie el estado
-        #que agarre numero y direccion y que lo cree si no existe
-        #poner estado pedido en activo
+        #Si no hay repartidor en cola, que sea null
         correo_cliente = request.data.get('correo')
         numero = request.data.get('numero')
         direccion = request.data.get('direccion')
+        pickup = request.data.get('pickup')
         clientea = get_object_or_404(cliente, correo=correo_cliente)
         numero, created = telefono.objects.get_or_create(idc=clientea, numero=numero)
         direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         carrito_cliente.comprado = True
+        #Si es entrega, que se cree
         carrito_cliente.save()
-        pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+        if pickup == True:
+            pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
+            #Condicional para ver si hay repartidor en cola
+            entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
+        else:
+            pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['put'])
     def entregar_pedido(self, request):
@@ -174,17 +180,24 @@ class repartidorViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def agregar_repartidor(self, request):
-        nombre = request.query_params['nombre']
-        apellido = request.query_params['apellido']
-        telefono = request.query_params['telefono']
-        repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono)
+        nombre = request.data.get('nombre')
+        password = request.data.get('password')
+        correo = request.data.get('correo')
+        telefono = request.data.get('telefono')
+        partes = nombre.split(maxsplit=1)
+        nombre = partes[0]
+        apellido = partes[1] if len(partes) > 1 else ''
+        telefono = request.data.get('telefono')
+        repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono, password=password, correo=correo)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=False, methods=['delete'])
-    def eliminar_repartidor(self, request):
-        idr = request.query_params['idr']
-        repartidor = get_object_or_404(repartidor, idr=idr)
-        repartidor.delete()
-        return Response(status=status.HTTP_200_OK)   
+    @action(detail=False, methods=['put'])
+    def activar_repartidor(self, request):
+        correo = request.data.get('correo')
+        idr = get_object_or_404(repartidor, correo=correo)
+        repartidora = get_object_or_404(repartidor, idr=idr)
+        repartidora.activo = True
+        repartidora.save()
+        return Response(status=status.HTTP_200_OK)
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = entrega.objects.all()
     permission_classes = [
@@ -241,26 +254,6 @@ class entregaViewSet(viewsets.ModelViewSet):
             .annotate(total_cantidad=Sum('cantidad'))\
             .order_by('producto__nomproducto')
         return Response(productos_pedidos)
-class disponibilidadViewSet(viewsets.ModelViewSet):
-    queryset = disponibilidad.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = DisponibilidadSerializer
-    @action(detail=False, methods=['post'])
-    def agregar_disponibilidad(self, request):
-        idr = request.query_params['idr']
-        diasdisp = request.query_params['diasdisp']
-        horasdisp = request.query_params['horasdisp']
-        repartidor = get_object_or_404(repartidor, idr=idr)
-        disponibilidad.objects.create(idr=repartidor, diasdisp=diasdisp, horasdisp=horasdisp)
-        return Response(status=status.HTTP_200_OK)
-    @action(detail=False, methods=['delete'])
-    def eliminar_disponibilidad(self, request):
-        idr = request.query_params['idr']
-        disponibilidad = get_object_or_404(disponibilidad, idr=idr)
-        disponibilidad.delete()
-        return Response(status=status.HTTP_200_OK)
 class mediotranspViewSet(viewsets.ModelViewSet):
     queryset = mediotransp.objects.all()
     permission_classes = [
@@ -290,26 +283,10 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = colaRepartidorSerializer
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
+    #Si entra y hay pedido en null, que lo asigne, si no, que vaya cola
     @action(detail=False, methods=['post'])
-    def agregar(self, request, pk=None):
-        repartidor_id = request.query_params['idr']
-        try:    
-            repar = repartidor.objects.get(idr=repartidor_id)
-            cola = colarepartidor.objects.create(idr=repar)
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-    #http://127.0.0.1:8000/api/api/colarepartidor/agregar/eliminar/
-    @action(detail=False, methods=['delete'])
-    def eliminar(self, request, pk=None):
-        idr = request.query_params['idr']
-        try:
-            repar = repartidor.objects.get(idr=idr)
-            cola = colarepartidor.objects.get(idr=repar)
-            cola.delete()
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST) 
+    def agregar_repartidor(self, request):
+        correo = request.data.get('correo')
 class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer

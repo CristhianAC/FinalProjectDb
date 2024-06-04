@@ -40,12 +40,15 @@ class direccionentrega(models.Model):
 class repartidor(models.Model):
     idr = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100)
+    correo = models.EmailField(unique = True)
+    password = models.CharField(max_length=250, null=True, blank=True)
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=100)
-class disponibilidad(models.Model):
-    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    diasdisp = models.CharField(max_length=150)
-    horasdisp = models.CharField(max_length=150)
+    activo = models.BooleanField(default=False)
+    def save(self, *args, **kwargs):
+        if self.password is not None and self.password != '':
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 class mediotransp(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
     vehiculo = models.CharField(max_length=100)
@@ -53,9 +56,7 @@ class mediotransp(models.Model):
     licencia = models.CharField(max_length=100)
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    hora = models.TimeField(auto_now_add=True)
-    idproducto = models.ForeignKey(producto, on_delete=models.CASCADE)
-    cantidad = models.IntegerField()
+    n = models.PositiveIntegerField(validators=[validate_positive])
 class carrito(models.Model):
     idcarrito = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
@@ -74,11 +75,9 @@ class pedido(models.Model):
     entregado = models.BooleanField(default=False)
     fechainicio = models.DateTimeField(auto_now_add=True)
     fechafin = models.DateTimeField(null = True, blank = True)
-    #fechas = models.ForeignKey(fecha, on_delete=models.CASCADE), se podnira inicio y fin
+    pickup = models.BooleanField(default=True)
 class entrega(models.Model):
-    codigoentrega = models.AutoField(primary_key=True)
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
     direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    #fechas = models.ForeignKey(fecha, on_delete=models.CASCADE)

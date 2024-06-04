@@ -110,9 +110,11 @@ class pedidoViewSet(viewsets.ModelViewSet):
         carrito_cliente.save()
         if pickup == True:
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
-            #Condicional para ver si hay repartidor en cola
-
-            entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
+            colarepartidora = colarepartidor.objects.first()
+            if colarepartidora is not None:
+                entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
+            else:
+                entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = colarepartidora)
         else:
             pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
 
@@ -284,7 +286,6 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = colaRepartidorSerializer
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
-
 class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer

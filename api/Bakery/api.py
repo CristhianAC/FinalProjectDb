@@ -142,10 +142,12 @@ class pedidoViewSet(viewsets.ModelViewSet):
         clientea = get_object_or_404(cliente, correo=correoa)
         pedido_cliente = pedido.objects.filter(idc=clientea.idc, entregado=False).first()
         entrega_cliente = entrega.objects.filter(idc=clientea.idc, idpedido=pedido_cliente.idpedido).first()
-        repartidor = repartidor.objects.filter(idr=entrega_cliente.idr.idr).first()
-        repartidor.ocupado = False
+        repartidora = repartidor.objects.filter(idr=entrega_cliente.idr.idr).first()
+        repartidora.ocupado = False
+        repartidora.activo = False
         pedido_cliente.entregado = True
         pedido_cliente.fechafin = datetime.now()
+        repartidora.save()
         pedido_cliente.save()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['delete'])
@@ -240,7 +242,7 @@ class repartidorViewSet(viewsets.ModelViewSet):
                 a = entrega.objects.filter(idr=None).first() 
                 repartidora.ocupado = True
                 a.idr = repartidora
-                repartidor.save()
+                repartidora.save()
                 a.save()
             else:
                 colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()

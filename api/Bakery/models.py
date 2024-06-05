@@ -50,17 +50,15 @@ class repartidor(models.Model):
     apellido = models.CharField(max_length=100)
     telefono = models.CharField(max_length=100)
     activo = models.BooleanField(default=False)
+    vehiculo = models.CharField(max_length=100)
+    licencia = models.CharField(max_length=100, null=True, blank=True)
+    fechavencimiento = models.DateField(null=True, blank=True)
     def save(self, *args, **kwargs):
         if self.password is not None and self.password != '':
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
     def __str__(self):
         return self.nombre + ' ' + self.apellido
-class mediotransp(models.Model):
-    idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
-    vehiculo = models.CharField(max_length=100)
-    fechavenci = models.DateField()
-    licencia = models.CharField(max_length=100)
 class colarepartidor(models.Model):
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE)
     n = models.PositiveIntegerField()
@@ -71,6 +69,7 @@ class carrito(models.Model):
     cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
     productos = models.ManyToManyField(producto, through='carritoproducto')
     comprado = models.BooleanField(default=False)
+    comentarios = models.TextField(null=True, blank=True)
 class carritoproducto(models.Model):
     carrito = models.ForeignKey(carrito, on_delete=models.CASCADE)
     producto = models.ForeignKey(producto, on_delete=models.CASCADE)
@@ -90,7 +89,6 @@ class entrega(models.Model):
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
     direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE, null = True, blank = True)
-
 class producto_mas_vendido(models.Model):
     productotendencia = models.ForeignKey(producto, on_delete=models.CASCADE)
     cantidadt = models.PositiveIntegerField(default=0)

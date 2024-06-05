@@ -101,10 +101,12 @@ class pedidoViewSet(viewsets.ModelViewSet):
         numero = request.data.get('numero')
         direccion = request.data.get('direccion')
         pickup = request.data.get('pickup')
+        comentario = request.data.get('comentario')
         clientea = get_object_or_404(cliente, correo=correo_cliente)
         numero, created = telefono.objects.get_or_create(idc=clientea, numero=numero)
         direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
+        carrito_cliente.comentarios = comentario
         carrito_cliente.comprado = True
         if pickup == 'False':
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
@@ -234,6 +236,11 @@ class repartidorViewSet(viewsets.ModelViewSet):
         pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False)
         serializer = EntregaSerializer(pedidos, many=True)
         return Response(serializer.data)
+    @action(detail=False, methods=['get'])
+    def verif_repartidor(self, request):
+        correo = request.query_params['correo']
+        repartidora = get_object_or_404(repartidor, correo=correo)
+        return Response({'correcto': True})
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = entrega.objects.all()
     permission_classes = [
@@ -260,28 +267,6 @@ class entregaViewSet(viewsets.ModelViewSet):
         entrega = get_object_or_404(entrega, codigoentrega=codigoentrega)
         entrega.delete()
         return Response(status=status.HTTP_200_OK) 
-class mediotranspViewSet(viewsets.ModelViewSet):
-    queryset = mediotransp.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = MedioTranspSerializer
-
-    @action(detail=False, methods=['post'])
-    def agregar_mediotransp(self, request):
-        idr = request.query_params['idr']
-        vehiculo = request.query_params['vehiculo']
-        fechavenci = request.query_params['fechavenci']
-        licencia = request.query_params['licencia']
-        repartidor = get_object_or_404(repartidor, idr=idr)
-        mediotransp.objects.create(idr=repartidor, vehiculo=vehiculo, fechavenci=fechavenci, licencia=licencia)
-        return Response(status=status.HTTP_200_OK)
-    @action(detail=False, methods=['delete'])
-    def eliminar_mediotransp(self, request):
-        idr = request.query_params['idr']
-        mediotransp = get_object_or_404(mediotransp, idr=idr)
-        mediotransp.delete()
-        return Response(status=status.HTTP_200_OK)
 class colarepartidorViewSet(viewsets.ModelViewSet):
     queryset = colarepartidor.objects.all()
     permission_classes = [

@@ -33,21 +33,15 @@ class EntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = entrega
         fields = '__all__'
-class MedioTranspSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = mediotransp
-        fields = '__all__'
 class colaRepartidorSerializer(serializers.ModelSerializer):
     idr = RepartidorSerializer()
     class Meta:
         model = colarepartidor
         fields = '__all__'
-
 class CarritoProductoSerializer(serializers.ModelSerializer):
     class Meta:
         model = carritoproducto
         fields = '__all__'
-
 class CarritoSerializer(serializers.ModelSerializer):
     productos = CarritoProductoSerializer(source='carritoproducto_set',many=True, read_only=True)
     class Meta:

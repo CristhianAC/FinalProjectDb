@@ -68,14 +68,15 @@ export const getProductDetails = (idp) =>
     `https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/producto/pedirProducto/?idp=${idp}`
   );
 
-export const makePetition = (correo, numero, direccion) =>
+export const makePetition = (correo, numero, direccion, pickup, comentario) =>
   axios.post(
     "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/pedido/agregar_pedido/",
     {
       correo: correo,
       numero: numero,
       direccion: direccion,
-      pickup: false
+      pickup: pickup,
+      comentario: comentario,
     }
   );
 
@@ -94,3 +95,11 @@ export const postNumeros = (correo) =>
       
     }
   );
+export const getDomiciliarios = (email) =>
+  axios.get(
+    "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/repartidor/verif_repartidor/" + email
+  );
+  export const getPedido= (email) =>
+    axios.get(
+      "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/repartidor/get_pedido/" + email
+    );

@@ -20,6 +20,7 @@ const ItemCard = ({ image, name, price, description, addToCart, item }) => {
         <img src={image} alt={name} className="object-contain" />
       </div>
       <h4 className=" font-bold">{name}</h4>
+      <h3 className=" font-semibold">Categoria: {item.categoria}</h3>
       <p>{description}</p>
       <p>Precio: {price} COP</p>
       {cartAdded && (

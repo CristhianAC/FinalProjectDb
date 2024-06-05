@@ -11,6 +11,8 @@ const CartItems = ({ carrito, session }) => {
   const [inputValue, setInputValue] = useState("");
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [phoneOptions, setPhoneOptions] = useState([]);
+  const [checked, setChecked] = useState(false);
+  const [comments, setComments] = useState("");
 
   useEffect(() => {
     const fetchPhoneNumbers = async () => {
@@ -42,8 +44,12 @@ const CartItems = ({ carrito, session }) => {
     );
   };
 
+  const handleCommentsChange = (e) => {
+    setComments(e.target.value);
+  };
+
   const makeAPayment = async () => {
-    await makePetition(session?.user?.email, inputValue, address);
+    await makePetition(session?.user?.email, inputValue, address, checked, comments);
     toast.success("Pedido realizado con éxito");
   };
 
@@ -91,33 +97,56 @@ const CartItems = ({ carrito, session }) => {
         </p>
       )}
       {cartItems.length > 0 && (
-        <div className="flex flex-row items-center justify-center space-x-11">
-          <Autocomplete onPlaceSelected={handlePlaceSelected} />
+        <section className="flex flex-col items-center space-y-20 bg-white">
+          <textarea
+            type="text"
+            name="comments"
+            onChange={handleCommentsChange}
+            value={comments}
+            placeholder="Comentarios"
+            className="border rounded-lg p-2 w-96 h-24 text-start text-black"
+          />
+          <div className="flex flex-row items-center justify-center space-x-11">
+            <Autocomplete onPlaceSelected={handlePlaceSelected} />
 
-          <div className="flex items-center justify-center">
-            <input
-              list="phone-options"
-              value={inputValue}
-              onChange={handleInputChange}
-              className="border rounded-lg p-2 text-black"
-              type="text"
-              placeholder="Teléfono"
-            />
-            <datalist id="phone-options">
-              {filteredOptions.map((option, index) => (
-                <option key={index} value={option} />
-              ))}
-            </datalist>
+            <div className="flex items-center justify-center">
+              <input
+                list="phone-options"
+                value={inputValue}
+                onChange={handleInputChange}
+                className="border rounded-lg p-2 text-black"
+                type="text"
+                placeholder="Teléfono"
+              />
+              <datalist id="phone-options">
+                {filteredOptions.map((option, index) => (
+                  <option key={index} value={option} />
+                ))}
+              </datalist>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="pickup"
+                checked={checked}
+                onChange={() => setChecked(!checked)}
+                className="h-6 w-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 focus:outline-none"
+              />
+              <label htmlFor="pickup" className="text-gray-700 font-medium">
+                Recoger en tienda
+              </label>
+            </div>
+            <Link to="/productos">
+              <button
+                className="btn bg-blue-600 text-white rounded-lg p-2 justify-center items-center"
+                onClick={makeAPayment}
+              >
+                Comprar
+              </button>
+            </Link>
           </div>
-          <Link to="/productos">
-            <button
-              className="btn bg-blue-600 text-white rounded-lg p-2 justify-center items-center"
-              onClick={makeAPayment}
-            >
-              Comprar
-            </button>
-          </Link>
-        </div>
+        </section>
       )}
     </div>
   );

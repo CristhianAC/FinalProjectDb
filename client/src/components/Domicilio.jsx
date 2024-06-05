@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 function Domicilio({ session }) {
   const [correct, setCorrect] = useState(null);
   const [domicilio, setDomicilio] = useState(null);
-  const [solicitado, setSolicitado] = useState(false);
+  
 
   useEffect(() => {
     const fetchDomiciliarios = async () => {
@@ -35,10 +35,9 @@ function Domicilio({ session }) {
         console.error("Error fetching pedido:", error);
       }
     }
-    setSolicitado(true);
-    if(!domicilio.productos){
-      window.location.reload();
-    }
+    
+   
+    
   };
   const handleEntregado = async () => {
     try {
@@ -47,6 +46,7 @@ function Domicilio({ session }) {
     } catch (error) {
       console.error("Error entregando pedido:", error);
     }
+    window.location.reload();
   };
 
   return (
@@ -63,7 +63,7 @@ function Domicilio({ session }) {
           >
             Ver pedidos
           </button>
-          {domicilio && correct.activo === true && solicitado === true ? (
+          {domicilio?.productos && correct.activo === true ? (
             <section>
               <h2 className="text-xl font-semibold mb-2">Pedidos</h2>
               <p className="mb-4">Dirección: {domicilio.direccion}</p>

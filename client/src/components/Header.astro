@@ -1,19 +1,19 @@
 ---
 import { SignIn, SignOut } from "auth-astro/components";
 import { getSession } from "auth-astro/server";
-import {getClienteGoogle} from "./API/Conexion-api";
+import { getClienteGoogle } from "./API/Conexion-api";
 import Register from "./Register.astro";
-const session = await getSession(Astro.request);
+
+let session = await getSession(Astro.request);
 if (session?.user) {
   const cliente = await getClienteGoogle(session.user.email, session.user.name);
-  console.log(cliente)
+  console.log(cliente);
 }
-
-
 
 ---
 
 <header>
+  
   <div class="header-container">
     <div class="main-header">
       <a href="/" class="logo">
@@ -22,7 +22,9 @@ if (session?.user) {
       <nav>
         <ul>
           <li><a href="/productos" class="boton-productos">Productos</a></li>
-          <li><a href="#contact-section" class="boton-contacto">Contáctenos</a></li>
+          <li>
+            <a href="#contact-section" class="boton-contacto">Contáctenos</a>
+          </li>
           <li>
             {
               !session ? (
@@ -66,25 +68,9 @@ if (session?.user) {
         <span class="close">&times;</span>
         <div class="form-container">
           <p class="title">Iniciar sesión</p>
-          <form id="login-form" class="form">
-            <input
-              type="email"
-              class="input"
-              placeholder="Email"
-              name="email"
-              required
-            />
-            <input
-              type="password"
-              class="input"
-              placeholder="Password"
-              name="password"
-              required
-            />
-            <button type="submit" class="form-btn">
-              Iniciar sesión
-            </button>
-          </form>
+        
+          
+          
           <div class="buttons-container">
             <SignIn provider="google" class="login-button google-login-button">
               <svg
@@ -139,14 +125,16 @@ if (session?.user) {
 
 <Register />
 <script>
-  import { validateClient } from "./API/Conexion-api";
+ 
+  
   // Definir HTML elementos para validar typescript
   const getElement = <T extends HTMLElement>(id: string): T | null =>
     document.getElementById(id) as T | null;
   const getElements = <T extends HTMLElement>(
     selector: string
   ): NodeListOf<T> => document.querySelectorAll(selector) as NodeListOf<T>;
-
+  
+  
   document.addEventListener("DOMContentLoaded", () => {
     const userMenuToggle = getElement<HTMLButtonElement>("user-menu-toggle");
     const userMenu = getElement<HTMLDivElement>("user-menu");
@@ -156,7 +144,7 @@ if (session?.user) {
     const signUpLink = getElement<HTMLAnchorElement>("sign-up-link");
     const signUpModal = getElement<HTMLDivElement>("sign-up-modal");
     const loginForm = getElement<HTMLFormElement>("login-form");
-    
+
     // abrir y cerrar menu de usuario
     userMenuToggle?.addEventListener("click", () => {
       if (userMenu) {
@@ -213,35 +201,7 @@ if (session?.user) {
     });
 
     // cerrar modal de login y sign-up con la tecla esc
-    if (loginForm) {
-      loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(loginForm);
-        const email = formData.get("email");
-        const password = formData.get("password");
-
-        if (typeof email === "string" && typeof password === "string") {
-          try {
-            const response = await validateClient(email, password);
-
-            if (response) {
-              const data = await response.data.json();
-              alert("Inicio de sesión exitoso");
-              if (loginModal) {
-                loginModal.style.display = "none";
-              }
-              window.location.reload();
-            } else {
-              const error = response;
-              alert(`Error: ${error}`);
-            }
-          } catch (error) {
-            alert(`Error: ${error instanceof Error ? error.message : error}`);
-          }
-        }
-      });
-    }
+    
   });
 </script>
 <style>

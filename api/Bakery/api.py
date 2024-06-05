@@ -249,6 +249,8 @@ class repartidorViewSet(viewsets.ModelViewSet):
         correo = request.query_params['correo']
         repartidora = get_object_or_404(repartidor, correo=correo)
         pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False).first()
+        if(pedidos is None):
+            return Response({'error': 'No hay pedidos disponibles'})
         idpedidoa = pedido.objects.filter(idpedido=pedidos.idpedido.idpedido).first()
         carritoa = carrito.objects.filter(idcarrito=idpedidoa.idcarrito.idcarrito).first()
         serializer = CarritoSerializer(carritoa)

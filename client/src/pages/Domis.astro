@@ -1,0 +1,12 @@
+---
+import Base from "src/layouts/Base.astro";``
+import { getSession } from "auth-astro/server";
+import Domicilio from "../components/Domicilio.jsx";
+const session = await getSession(Astro.request);
+
+
+---
+
+<Base>
+    <Domicilio client:only session={session} />
+</Base>

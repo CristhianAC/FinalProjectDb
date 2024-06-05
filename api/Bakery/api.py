@@ -247,9 +247,9 @@ class repartidorViewSet(viewsets.ModelViewSet):
             else:
                 colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
                 if colarepartidor_mayor is None:
-                    colarepartidor.objects.create(idr=repartidora, n=1)
+                    colarepartidor.objects.get_or_create(idr=repartidora, n=1)
                 else: 
-                    colarepartidor.objects.create(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
+                    colarepartidor.objects.get_or_create(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
                 repartidora.save()
             return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])

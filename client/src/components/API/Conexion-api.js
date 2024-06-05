@@ -97,7 +97,7 @@ export const postNumeros = (correo) =>
   );
 export const getDomiciliarios = (email) =>
   axios.get(
-    "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/repartidor/verif_repartidor/" + email
+    "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/repartidor/verif_repartidor/?correo=" + email
   );
   export const getPedido= (email) =>
     axios.get(

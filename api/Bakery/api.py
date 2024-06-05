@@ -245,7 +245,7 @@ class repartidorViewSet(viewsets.ModelViewSet):
     def verif_repartidor(self, request):
         correo = request.query_params['correo']
         repartidora = get_object_or_404(repartidor, correo=correo)
-        return Response({'activo': repartidor.activo})
+        return Response({'activo': repartidora.activo})
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = entrega.objects.all()
     permission_classes = [

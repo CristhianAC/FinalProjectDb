@@ -108,7 +108,7 @@ class pedidoViewSet(viewsets.ModelViewSet):
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         carrito_cliente.comentarios = comentario
         carrito_cliente.comprado = True
-        if pickup == 'False':
+        if pickup == False:
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
             colarepartidora = colarepartidor.objects.first()
             if colarepartidora is None:

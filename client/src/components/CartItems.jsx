@@ -27,7 +27,10 @@ const CartItems = ({ carrito, session }) => {
     };
     fetchPhoneNumbers();
   }, [session]);
-
+  useEffect(()=>
+  {
+    console.log(checked)
+  },[checked])
   const handlePlaceSelected = (place) => {
     if (place.formatted_address) {
       setAddress(place.formatted_address);
@@ -49,7 +52,14 @@ const CartItems = ({ carrito, session }) => {
   };
 
   const makeAPayment = async () => {
-    await makePetition(session?.user?.email, inputValue, address, checked, comments);
+    console.log(checked)
+    await makePetition(
+      session?.user?.email,
+      inputValue,
+      address,
+      checked,
+      comments
+    );
     toast.success("Pedido realizado con éxito");
   };
 
@@ -97,7 +107,7 @@ const CartItems = ({ carrito, session }) => {
         </p>
       )}
       {cartItems.length > 0 && (
-        <section className="flex flex-col items-center space-y-20 bg-white">
+        <section className="flex flex-col items-center space-y-20">
           <textarea
             type="text"
             name="comments"
@@ -137,6 +147,7 @@ const CartItems = ({ carrito, session }) => {
                 Recoger en tienda
               </label>
             </div>
+
             <Link to="/productos">
               <button
                 className="btn bg-blue-600 text-white rounded-lg p-2 justify-center items-center"

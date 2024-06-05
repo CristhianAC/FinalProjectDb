@@ -74,7 +74,7 @@ class clienteViewSet(viewsets.ModelViewSet):
         if clientecheck.password is None:
             return Response('El usuario no tiene registrado una contraseña')
         passwordcompare = check_password(password, clientecheck.password)
-        return Response('Contraseña correcta' if passwordcompare else 'Contraseña incorrecta')
+        return Response({'nombre': clientecheck.nombre, 'idc': clientecheck.idc, 'correo': clientecheck.correo})
     @action(detail=False, methods=['post'])
     def google_login(self, request):
         correo = request.data.get('correo')
@@ -184,7 +184,6 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
         direccion = get_object_or_404(direccionentrega, codigodireccion=codigodireccion)
         direccion.delete()
         return Response(status=status.HTTP_200_OK)
-    #Que se pida correo y de todas las idreccion 
     @action(detail=False, methods=['get'])
     def get_direcciones(self, request):
         correo = request.query_params['correo']
@@ -256,8 +255,7 @@ class entregaViewSet(viewsets.ModelViewSet):
         codigoentrega = request.query_params['codigoentrega']
         entrega = get_object_or_404(entrega, codigoentrega=codigoentrega)
         entrega.delete()
-        return Response(status=status.HTTP_200_OK)
-    
+        return Response(status=status.HTTP_200_OK) 
 class mediotranspViewSet(viewsets.ModelViewSet):
     queryset = mediotransp.objects.all()
     permission_classes = [

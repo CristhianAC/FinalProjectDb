@@ -1,9 +1,10 @@
-import { getDomiciliarios, getPedido } from "./API/Conexion-api";
+import { getDomiciliarios, getPedido, activar, entregar } from "./API/Conexion-api";
 import React, { useEffect, useState } from "react";
 
 function Domicilio({ session }) {
   const [correct, setCorrect] = useState(null);
   const [domicilio, setDomicilio] = useState(null);
+  const [solicitado, setSolicitado] = useState(false);
 
   useEffect(() => {
     const fetchDomiciliarios = async () => {
@@ -25,6 +26,22 @@ function Domicilio({ session }) {
       } catch (error) {
         console.error("Error fetching pedido:", error);
       }
+    } else {
+      await activar(session.user.email);
+      try {
+        const pedido = await getPedido(session.user.email);
+        setDomicilio(pedido.data);
+      } catch (error) {
+        console.error("Error fetching pedido:", error);
+      }
+    }
+    setSolicitado(true);
+  };
+  const handleEntregado = async () => {
+    try {
+      await entregar(session.user.email);
+    } catch (error) {
+      console.error("Error entregando pedido:", error);
     }
   };
 
@@ -42,23 +59,28 @@ function Domicilio({ session }) {
           >
             Ver pedidos
           </button>
-          {domicilio && (
+          {domicilio && correct.activo === true && solicitado === true ? (
             <section>
               <h2 className="text-xl font-semibold mb-2">Pedidos</h2>
               <p className="mb-4">Dirección: {domicilio.direccion}</p>
-              {domicilio.productos.map((producto, index) => (
+              <p className="mb-4">Total: ${domicilio.total} COP</p>
+              {Object.entries(domicilio.productos).map(([nombre, producto], index) => (
                 <section
                   key={index}
                   className="bg-gray-100 rounded-lg p-4 mb-4"
                 >
                   <h3 className="text-lg font-semibold">Producto {index + 1}</h3>
-                  <p>ID: {producto.id}</p>
+                  <p>Nombre: {nombre}</p>
+                  <p>Precio: ${producto.precio} COP</p>
                   <p>Cantidad: {producto.cantidad}</p>
-                  <p>Carrito: {producto.carrito}</p>
-                  <p>Producto: {producto.producto}</p>
+                  <p>Total: ${producto.total} COP</p>
                 </section>
+                
               ))}
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleEntregado}>Marcar como entregado</button>
             </section>
+          ) : (
+            <h4 >No tienes pedidos a cargo</h4>
           )}
         </section>
       ) : (

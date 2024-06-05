@@ -40,7 +40,7 @@ function ItemManager({ session }) {
         getProducts(),
         getCarrito(session.user?.email),
       ]);
-
+      console.log(cartResponse);
       const products = productsResponse.data;
       const cartItems = cartResponse.productos;
 

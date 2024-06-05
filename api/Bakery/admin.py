@@ -37,4 +37,4 @@ admin.site.register(repartidor)
 admin.site.register(colarepartidor)
 # Register your models here.
 
-#admin.site.register(entrega)
+admin.site.register(entrega)

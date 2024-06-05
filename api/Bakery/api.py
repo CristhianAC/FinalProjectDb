@@ -117,6 +117,7 @@ class pedidoViewSet(viewsets.ModelViewSet):
                 repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = repartidora)
                 colarepartidora.delete()
+                colarepartidora.save()
             pedidoa.save()
         else:
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
@@ -241,6 +242,8 @@ class repartidorViewSet(viewsets.ModelViewSet):
             if entrega.objects.filter(idr = None).exists():
                 a = entrega.objects.filter(idr=None).first() 
                 repartidora.ocupado = True
+                repartidorb = colarepartidor.objects.filter(idr=repartidora).first()
+                repartidorb.delete()    
                 a.idr = repartidora
                 repartidora.save()
                 a.save()

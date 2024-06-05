@@ -242,8 +242,7 @@ class repartidorViewSet(viewsets.ModelViewSet):
             if entrega.objects.filter(idr = None).exists():
                 a = entrega.objects.filter(idr=None).first() 
                 repartidora.ocupado = True
-                repartidorb = colarepartidor.objects.filter(idr=repartidora).first()
-                repartidorb.delete()    
+                    
                 a.idr = repartidora
                 repartidora.save()
                 a.save()

@@ -68,13 +68,13 @@ class clienteViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])
     def check_password(self, request):
-        password = request.data.get('password')
-        correo = request.data.get('correo')
+        password = request.query_params['password']
+        correo = request.query_params['correo']
         clientecheck = cliente.objects.filter(correo=correo).first()
         if clientecheck.password is None:
             return Response('El usuario no tiene registrado una contraseña')
         passwordcompare = check_password(password, clientecheck.password)
-        return Response('Contraseña correcta' if passwordcompare else 'Contraseña incorrecta')
+        return Response({'nombre': clientecheck.nombre, 'idc': clientecheck.idc, 'correo': clientecheck.correo})
     @action(detail=False, methods=['post'])
     def google_login(self, request):
         correo = request.data.get('correo')
@@ -97,12 +97,41 @@ class pedidoViewSet(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
     @action(detail=False, methods=['post'])
     def agregar_pedido(self, request):
-        idc = request.query_params['idc']
-        estadopedido = request.query_params['estadopedido']
-        fecha = request.query_params['fecha']
-        idcarrito = request.query_params['idcarrito']
-        cliente = get_object_or_404(cliente, idc=idc)
-        pedido.objects.create(idc=cliente, estadopedido=estadopedido, fecha=fecha, idcarrito=idcarrito)
+        #Si no hay repartidor en cola, que sea null
+        correo_cliente = request.data.get('correo')
+        numero = request.data.get('numero')
+        direccion = request.data.get('direccion')
+        pickup = request.data.get('pickup')
+        clientea = get_object_or_404(cliente, correo=correo_cliente)
+        numero, created = telefono.objects.get_or_create(idc=clientea, numero=numero)
+        direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
+        carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
+        carrito_cliente.comprado = True
+        if pickup == 'True':
+            pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
+            colarepartidora = colarepartidor.objects.first()
+            repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
+            if colarepartidora is None:
+                print("hola2")
+                entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
+            else:
+                print("hola")
+                entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = repartidora)
+                colarepartidora.delete()
+                print(colarepartidora)
+            pedidoa.save()
+        else:
+            pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+        carrito_cliente.save()
+        return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['put'])
+    def entregar_pedido(self, request):
+        correoa = request.data.get('correo')
+        clientea = get_object_or_404(cliente, correo=correoa)
+        pedido_cliente = pedido.objects.filter(idc=clientea.idc, entregado=False).first()
+        pedido_cliente.entregado = True
+        pedido_cliente.fechafin = datetime.now()
+        pedido_cliente.save()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['delete'])
     def eliminar_pedido(self, request):
@@ -118,17 +147,23 @@ class telefonoViewSet(viewsets.ModelViewSet):
     serializer_class = TelefonoSerializer
     @action(detail=False, methods=['post'])
     def agregar_telefono(self, request):
-        idc = request.query_params['idc']
-        numero = request.query_params['numero']
-        cliente = get_object_or_404(cliente, idc=idc)
-        telefono.objects.create(idc=cliente, Numero=numero)
-        return Response(status=status.HTTP_200_OK)
+        correo = request.data.get('correo')
+        numero = request.data.get('numero')
+        clientea = get_object_or_404(cliente, correo=correo)
+        telefono, created = telefono.objects.get_or_create(idc=cliente, numero=numero)
     @action(detail=False, methods=['delete'])
     def eliminar_telefono(self, request):
         Numero = request.query_params['Numero']
         telefono = get_object_or_404(telefono, Numero=Numero)
         telefono.delete()
         return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def get_telefono(self, request):
+        numero = request.query_params['correo']
+        clientea = get_object_or_404(cliente, correo=numero)
+        telefonos = telefono.objects.filter(idc=clientea.idc)
+        serializer = TelefonoSerializer(telefonos, many=True)
+        return Response(serializer.data)
 class direccionentregaViewSet(viewsets.ModelViewSet):
     queryset = direccionentrega.objects.all()
     permission_classes = [
@@ -149,12 +184,13 @@ class direccionentregaViewSet(viewsets.ModelViewSet):
         direccion = get_object_or_404(direccionentrega, codigodireccion=codigodireccion)
         direccion.delete()
         return Response(status=status.HTTP_200_OK)
-class fechaViewSet(viewsets.ModelViewSet):
-    queryset = fecha.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = FechaSerializer
+    @action(detail=False, methods=['get'])
+    def get_direcciones(self, request):
+        correo = request.query_params['correo']
+        clientea = get_object_or_404(cliente, correo=correo)
+        direcciones = direccionentrega.objects.filter(idc=clientea.idc)
+        serializer = DireccionEntregaSerializer(direcciones, many=True)
+        return Response(serializer.data)
 class repartidorViewSet(viewsets.ModelViewSet):
     queryset = repartidor.objects.all()
     permission_classes = [
@@ -164,17 +200,36 @@ class repartidorViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def agregar_repartidor(self, request):
-        nombre = request.query_params['nombre']
-        apellido = request.query_params['apellido']
-        telefono = request.query_params['telefono']
-        repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono)
+        nombre = request.data.get('nombre')
+        password = request.data.get('password')
+        correo = request.data.get('correo')
+        telefono = request.data.get('telefono')
+        partes = nombre.split(maxsplit=1)
+        nombre = partes[0]
+        apellido = partes[1] if len(partes) > 1 else ''
+        repartidor.objects.create(nombre=nombre, apellido=apellido, telefono=telefono, password=password, correo=correo)
         return Response(status=status.HTTP_200_OK)
-    @action(detail=False, methods=['delete'])
-    def eliminar_repartidor(self, request):
-        idr = request.query_params['idr']
-        repartidor = get_object_or_404(repartidor, idr=idr)
-        repartidor.delete()
-        return Response(status=status.HTTP_200_OK)   
+    @action(detail=False, methods=['put'])
+    def activar_repartidor(self, request):
+        correo = request.data.get('correo')
+        repartidora = get_object_or_404(repartidor, correo=correo)
+        if repartidora.activo:
+            repartidora.activo = False
+            return Response(status=status.HTTP_200_OK)
+        else: 
+            repartidora.activo = True
+            if pedido.objects.filter(pickup=True, entregado=False).exists():
+                pedidoa = pedido.objects.filter(pickup=True, entregado=False).first()
+                direccion = direccionentrega.objects.filter(idc=pedidoa.idc).first()
+                entrega.objects.create(idc=pedidoa.idc, idpedido = pedidoa, direccion = direccion, idr = repartidora)
+            else:
+                colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
+                if colarepartidor_mayor is None:
+                    colarepartidor.objects.create(idr=repartidora, n=1)
+                else: 
+                    colarepartidor.objects.create(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
+                repartidora.save()
+            return Response(status=status.HTTP_200_OK)
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = entrega.objects.all()
     permission_classes = [
@@ -200,58 +255,7 @@ class entregaViewSet(viewsets.ModelViewSet):
         codigoentrega = request.query_params['codigoentrega']
         entrega = get_object_or_404(entrega, codigoentrega=codigoentrega)
         entrega.delete()
-        return Response(status=status.HTTP_200_OK)
-    
-    @action(detail=False, methods=['get'])
-    def pedidos_por_dia(self, request):
-        fecha = request.query_params['fecha']
-        if not fecha:
-            return Response({"error": "Se requiere un parámetro de 'fecha'"}, status=400)        
-        queryset = pedido.objects.filter(fecha=fecha).annotate(dia=TruncDay('fecha')).values('dia').annotate(total_pedidos=Count('idpedido'))
-        return Response(queryset)
-    @action(detail=False, methods=['get'])
-    def pedidos_en_periodo(self, request):
-        fecha_inicio = request.query_params.get('fecha_inicio')
-        fecha_fin = request.query_params.get('fecha_fin')
-        if not fecha_inicio or not fecha_fin:
-            return Response({"error": "Se requieren los parámetros 'fecha_inicio' y 'fecha_fin'"}, status=400)
-
-        try:
-            fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
-            fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
-        except ValueError:
-            return Response({"error": "Formato de fecha inválido. Use 'YYYY-MM-DD'."}, status=400)
-
-        total_pedidos = pedido.objects.filter(fecha__range=[fecha_inicio, fecha_fin]).count()
-    @action(detail=False, methods=['get'])
-    def pedidos_por_producto(self, request):
-        # Filtrar productos solo de pedidos que han sido entregados
-        productos_pedidos = carritoproducto.objects.filter(carrito__pedido__estadopedido='entregado')\
-            .values('producto__nomproducto')\
-            .annotate(total_cantidad=Sum('cantidad'))\
-            .order_by('producto__nomproducto')
-        return Response(productos_pedidos)
-    
-class disponibilidadViewSet(viewsets.ModelViewSet):
-    queryset = disponibilidad.objects.all()
-    permission_classes = [
-        permissions.AllowAny
-    ]
-    serializer_class = DisponibilidadSerializer
-    @action(detail=False, methods=['post'])
-    def agregar_disponibilidad(self, request):
-        idr = request.query_params['idr']
-        diasdisp = request.query_params['diasdisp']
-        horasdisp = request.query_params['horasdisp']
-        repartidor = get_object_or_404(repartidor, idr=idr)
-        disponibilidad.objects.create(idr=repartidor, diasdisp=diasdisp, horasdisp=horasdisp)
-        return Response(status=status.HTTP_200_OK)
-    @action(detail=False, methods=['delete'])
-    def eliminar_disponibilidad(self, request):
-        idr = request.query_params['idr']
-        disponibilidad = get_object_or_404(disponibilidad, idr=idr)
-        disponibilidad.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK) 
 class mediotranspViewSet(viewsets.ModelViewSet):
     queryset = mediotransp.objects.all()
     permission_classes = [
@@ -281,26 +285,6 @@ class colarepartidorViewSet(viewsets.ModelViewSet):
     ]
     serializer_class = colaRepartidorSerializer
     #http://127.0.0.1:8000/api/api/colarepartidor/agregar/agregar/
-    @action(detail=False, methods=['post'])
-    def agregar(self, request, pk=None):
-        repartidor_id = request.query_params['idr']
-        try:    
-            repar = repartidor.objects.get(idr=repartidor_id)
-            cola = colarepartidor.objects.create(idr=repar)
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-    #http://127.0.0.1:8000/api/api/colarepartidor/agregar/eliminar/
-    @action(detail=False, methods=['delete'])
-    def eliminar(self, request, pk=None):
-        idr = request.query_params['idr']
-        try:
-            repar = repartidor.objects.get(idr=idr)
-            cola = colarepartidor.objects.get(idr=repar)
-            cola.delete()
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST) 
 class carritoViewSet(viewsets.ModelViewSet):
     queryset = carrito.objects.all()
     serializer_class = CarritoSerializer
@@ -344,7 +328,6 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
         elif int(cantidad) == 0:
             carrito_producto.delete()
             return Response(status=status.HTTP_200_OK)
-        
     @action(detail=False, methods=['put'])
     def remove_item(self, request):
         cliente_correo = request.data.get('correo')
@@ -371,8 +354,7 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     def get_cart(self, request):
         cliente_correo = request.query_params.get('correo')
         clientea = get_object_or_404(cliente, correo=cliente_correo)
+        carritoa, created = carrito.objects.get_or_create(cliente = clientea)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
-        if not carrito_cliente:
-            return Response({"error": "No se encontró el carrito del cliente"}, status=status.HTTP_404_NOT_FOUND)
         serializer = CarritoSerializer(carrito_cliente)
         return Response(serializer.data, status=status.HTTP_200_OK)

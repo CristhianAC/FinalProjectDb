@@ -23,10 +23,6 @@ class DireccionEntregaSerializer(serializers.ModelSerializer):
         model = direccionentrega
         fields = '__all__'
         read_only_fields = ['codigodireccion']
-class FechaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = fecha
-        fields = '__all__'
 class RepartidorSerializer(serializers.ModelSerializer):
     
     class Meta:
@@ -36,10 +32,6 @@ class RepartidorSerializer(serializers.ModelSerializer):
 class EntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = entrega
-        fields = '__all__'
-class DisponibilidadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = disponibilidad
         fields = '__all__'
 class MedioTranspSerializer(serializers.ModelSerializer):
     class Meta:

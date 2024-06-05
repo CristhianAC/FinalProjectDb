@@ -68,8 +68,8 @@ class clienteViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])
     def check_password(self, request):
-        password = request.data.get('password')
-        correo = request.data.get('correo')
+        password = request.query_params['password']
+        correo = request.query_params['correo']
         clientecheck = cliente.objects.filter(correo=correo).first()
         if clientecheck.password is None:
             return Response('El usuario no tiene registrado una contraseña')

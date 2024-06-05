@@ -115,9 +115,10 @@ class pedidoViewSet(viewsets.ModelViewSet):
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
             else:
                 repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
+                repartidora.ocupado = True
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = repartidora)
+                repartidora.save()  
                 colarepartidora.delete()
-                colarepartidora.save()
             pedidoa.save()
         else:
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
@@ -233,29 +234,25 @@ class repartidorViewSet(viewsets.ModelViewSet):
         repartidora = get_object_or_404(repartidor, correo=correo)
         if repartidora.ocupado == True:
             return Response({'error': 'El repartidor tiene un pedido activo'}, status=status.HTTP_400_BAD_REQUEST)
-        if repartidora.activo:
-            repartidora.activo = False
+
+        repartidora.activo = True
+        if entrega.objects.filter(idr = None).exists():
+            a = entrega.objects.filter(idr=None).first() 
+            repartidora.ocupado = True
+                
+            a.idr = repartidora
             repartidora.save()
-            return Response(status=status.HTTP_200_OK)
-        else: 
-            repartidora.activo = True
-            if entrega.objects.filter(idr = None).exists():
-                a = entrega.objects.filter(idr=None).first() 
-                repartidora.ocupado = True
-                    
-                a.idr = repartidora
+            a.save()
+        else:
+            colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
+            colarepartidor_mayorcheck = colarepartidor.objects.filter(idr=repartidora).first()
+            if colarepartidor_mayorcheck is None:
+                if colarepartidor_mayor is None:
+                    colarepartidor.objects.get(idr=repartidora, n=1)
+                else: 
+                    colarepartidor.objects.get(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
                 repartidora.save()
-                a.save()
-            else:
-                colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
-                colarepartidor_mayorcheck = colarepartidor.objects.filter(idr=repartidora).first()
-                if colarepartidor_mayorcheck is None:
-                    if colarepartidor_mayor is None:
-                        colarepartidor.objects.get(idr=repartidora, n=1)
-                    else: 
-                        colarepartidor.objects.get(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
-                    repartidora.save()
-            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])
     def get_pedido(self, request):
         correo = request.query_params['correo']

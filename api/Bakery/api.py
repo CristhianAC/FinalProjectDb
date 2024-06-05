@@ -251,9 +251,9 @@ class repartidorViewSet(viewsets.ModelViewSet):
                 colarepartidor_mayorcheck = colarepartidor.objects.filter(idr=repartidora).first()
                 if colarepartidor_mayorcheck is None:
                     if colarepartidor_mayor is None:
-                        colarepartidor.objects.get_or_create(idr=repartidora, n=1)
+                        colarepartidor.objects.get(idr=repartidora, n=1)
                     else: 
-                        colarepartidor.objects.get_or_create(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
+                        colarepartidor.objects.get(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
                     repartidora.save()
             return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['get'])

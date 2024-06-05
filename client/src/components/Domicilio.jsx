@@ -43,7 +43,7 @@ function Domicilio({ session }) {
   const handleEntregado = async () => {
     try {
       await entregar(session.user.email);
-      window.location.reload();
+      
     } catch (error) {
       console.error("Error entregando pedido:", error);
     }

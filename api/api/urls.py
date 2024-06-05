@@ -17,8 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from schema_graph.views import Schema
+from django.shortcuts import redirect
+
+def redirect_to_external(request):
+    return redirect('https://final-project-db-tan.vercel.app/')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('Bakery.urls')), # Add this line
     path('schema/', Schema.as_view()),
+    path('', redirect_to_external)
 ]

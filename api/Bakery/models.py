@@ -86,11 +86,14 @@ class pedido(models.Model):
     fechafin = models.DateTimeField(null = True, blank = True)
     pickup = models.BooleanField(default=True)
     total = models.FloatField(default=0, null=True, blank=True)
+    
 class entrega(models.Model):
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
     direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE, null = True, blank = True)
+    def __str__(self) -> str:
+        return self.idr.nombre
 class producto_mas_vendido(models.Model):
     productotendencia = models.ForeignKey(producto, on_delete=models.CASCADE)
     cantidadt = models.PositiveIntegerField(default=0)

@@ -141,8 +141,13 @@ class pedidoViewSet(viewsets.ModelViewSet):
         correoa = request.data.get('correo')
         clientea = get_object_or_404(cliente, correo=correoa)
         pedido_cliente = pedido.objects.filter(idc=clientea.idc, entregado=False).first()
+        entrega_cliente = entrega.objects.filter(idc=clientea.idc, idpedido=pedido_cliente.idpedido).first()
+        repartidora = repartidor.objects.filter(idr=entrega_cliente.idr.idr).first()
+        repartidora.ocupado = False
+        repartidora.activo = False
         pedido_cliente.entregado = True
         pedido_cliente.fechafin = datetime.now()
+        repartidora.save()
         pedido_cliente.save()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['delete'])
@@ -151,7 +156,6 @@ class pedidoViewSet(viewsets.ModelViewSet):
         pedido = get_object_or_404(pedido, idpedido=idpedido)
         pedido.delete()
         return Response(status=status.HTTP_200_OK)
-    
 class telefonoViewSet(viewsets.ModelViewSet):
     queryset = telefono.objects.all()
     permission_classes = [
@@ -226,6 +230,8 @@ class repartidorViewSet(viewsets.ModelViewSet):
     def activar_repartidor(self, request):
         correo = request.data.get('correo')
         repartidora = get_object_or_404(repartidor, correo=correo)
+        if repartidora.ocupado == True:
+            return Response({'error': 'El repartidor tiene un pedido activo'}, status=status.HTTP_400_BAD_REQUEST)
         if repartidora.activo:
             repartidora.activo = False
             repartidora.save()
@@ -234,7 +240,9 @@ class repartidorViewSet(viewsets.ModelViewSet):
             repartidora.activo = True
             if entrega.objects.filter(idr = None).exists():
                 a = entrega.objects.filter(idr=None).first() 
+                repartidora.ocupado = True
                 a.idr = repartidora
+                repartidora.save()
                 a.save()
             else:
                 colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()

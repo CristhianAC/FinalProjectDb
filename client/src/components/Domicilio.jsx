@@ -1,11 +1,11 @@
-
-import { getDomiciliarios, getPedido, activar } from "./API/Conexion-api";
+import { getDomiciliarios, getPedido, activar, entregar } from "./API/Conexion-api";
 import React, { useEffect, useState } from "react";
 
 function Domicilio({ session }) {
   const [correct, setCorrect] = useState(null);
   const [domicilio, setDomicilio] = useState(null);
   const [solicitado, setSolicitado] = useState(false);
+
   useEffect(() => {
     const fetchDomiciliarios = async () => {
       try {
@@ -19,7 +19,6 @@ function Domicilio({ session }) {
   }, [session]);
 
   const handleDomicilio = async () => {
-    
     if (correct.activo === true) {
       try {
         const pedido = await getPedido(session.user.email);
@@ -27,7 +26,7 @@ function Domicilio({ session }) {
       } catch (error) {
         console.error("Error fetching pedido:", error);
       }
-    }else{
+    } else {
       await activar(session.user.email);
       try {
         const pedido = await getPedido(session.user.email);
@@ -37,6 +36,13 @@ function Domicilio({ session }) {
       }
     }
     setSolicitado(true);
+  };
+  const handleEntregado = async () => {
+    try {
+      await entregar(session.user.email);
+    } catch (error) {
+      console.error("Error entregando pedido:", error);
+    }
   };
 
   return (
@@ -53,11 +59,11 @@ function Domicilio({ session }) {
           >
             Ver pedidos
           </button>
-          {domicilio && correct.activo === true && solicitado === true ? (  
+          {domicilio && correct.activo === true && solicitado === true ? (
             <section>
               <h2 className="text-xl font-semibold mb-2">Pedidos</h2>
               <p className="mb-4">Dirección: {domicilio.direccion}</p>
-              <p className="mb-4">Total: {domicilio.total}</p>
+              <p className="mb-4">Total: ${domicilio.total} COP</p>
               {Object.entries(domicilio.productos).map(([nombre, producto], index) => (
                 <section
                   key={index}
@@ -65,13 +71,17 @@ function Domicilio({ session }) {
                 >
                   <h3 className="text-lg font-semibold">Producto {index + 1}</h3>
                   <p>Nombre: {nombre}</p>
-                  <p>Precio: {producto.precio}</p>
+                  <p>Precio: ${producto.precio} COP</p>
                   <p>Cantidad: {producto.cantidad}</p>
-                  <p>Total: {producto.total}</p>
+                  <p>Total: ${producto.total} COP</p>
                 </section>
+                
               ))}
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4" onClick={handleEntregado}>Marcar como entregado</button>
             </section>
-          ): <h4> No tienes pedidos a cargo </h4>}
+          ) : (
+            <h4 >No tienes pedidos a cargo</h4>
+          )}
         </section>
       ) : (
         <h1 className="text-2xl font-bold">

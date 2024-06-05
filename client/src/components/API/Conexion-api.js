@@ -110,3 +110,9 @@ export const getDomiciliarios = (email) =>
         correo: email
       }
     );
+  export const entregar = (email) =>
+    axios.put(
+      "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/pedido/entregar_pedido/",{
+        correo: email
+      }
+    );

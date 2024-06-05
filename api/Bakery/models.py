@@ -81,3 +81,4 @@ class entrega(models.Model):
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)
     direccion = models.ForeignKey(direccionentrega, on_delete=models.CASCADE)
     idr = models.ForeignKey(repartidor, on_delete=models.CASCADE, null = True, blank = True)
+    

@@ -2,13 +2,14 @@
 import { SignIn, SignOut } from "auth-astro/components";
 import { getSession } from "auth-astro/server";
 import {getClienteGoogle} from "./API/Conexion-api";
+import Register from "./Register.astro";
 const session = await getSession(Astro.request);
 if (session?.user) {
   const cliente = await getClienteGoogle(session.user.email, session.user.name);
   console.log(cliente)
 }
 
-import Register from "./Register.astro";
+
 
 ---
 

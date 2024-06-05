@@ -357,7 +357,6 @@ class carritoproductoViewSet(viewsets.ModelViewSet):
     def get_cart(self, request):
         cliente_correo = request.query_params.get('correo')
         clientea = get_object_or_404(cliente, correo=cliente_correo)
-        carritoa, created = carrito.objects.get_or_create(cliente = clientea)
-        carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
-        serializer = CarritoSerializer(carrito_cliente)
+        carritoa, created = carrito.objects.get_or_create(cliente = clientea, comprado=False)
+        serializer = CarritoSerializer(carritoa)
         return Response(serializer.data, status=status.HTTP_200_OK)

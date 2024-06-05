@@ -1,45 +1,46 @@
-import React, { useState } from "react";
-import { makePetition } from "./API/Conexion-api";
+import React, { useState, useEffect } from "react";
+import { makePetition, getNumeros } from "./API/Conexion-api";
 import Autocomplete from "./Servicios/AutoComplete";
 
 const CartItems = ({ carrito, session }) => {
   const cartItems = carrito || [];
   const [address, setAddress] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState([]);
+  const [phoneOptions, setPhoneOptions] = useState([]);
 
-  const makeAPayment = async () => {
-    await makePetition(session?.user?.email);
-  };
+  useEffect(() => {
+    const fetchPhoneNumbers = async () => {
+      if (session?.user?.email) {
+        try {
+          const phoneNumbers = await getNumeros(session.user.email);
+          setPhoneOptions(phoneNumbers.map((phone) => phone.numero));
+        } catch (error) {
+          console.error("Error fetching phone numbers:", error);
+        }
+      }
+    };
+    fetchPhoneNumbers();
+  }, [session]);
 
   const handlePlaceSelected = (place) => {
     if (place.formatted_address) {
       setAddress(place.formatted_address);
     }
   };
-  const [inputValue, setInputValue] = useState("");
-  const [filteredOptions, setFilteredOptions] = useState([
-    "+57 300 123 4567",
-    "+57 310 234 5678",
-    "+57 320 345 6789",
-    "+57 301 456 7890",
-    "+57 311 567 8901",
-  ]);
-
-  const options = [
-    "+57 300 123 4567",
-    "+57 310 234 5678",
-    "+57 320 345 6789",
-    "+57 301 456 7890",
-    "+57 311 567 8901",
-  ];
 
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
     setFilteredOptions(
-      options.filter((option) =>
+      phoneOptions.filter((option) =>
         option.toLowerCase().includes(value.toLowerCase())
       )
     );
+  };
+
+  const makeAPayment = async () => {
+    await makePetition(session?.user?.email, inputValue, address);
   };
 
   return (
@@ -80,9 +81,7 @@ const CartItems = ({ carrito, session }) => {
           );
         })
       ) : (
-        <p className="text-red-600 font-semibold">
-          No hay productos en el carrito
-        </p>
+        <p className="text-red-600 font-semibold">No hay productos en el carrito</p>
       )}
       {cartItems.length > 0 && (
         <div className="flex flex-row items-center justify-center space-x-11">

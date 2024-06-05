@@ -68,11 +68,14 @@ export const getProductDetails = (idp) =>
     `https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/producto/pedirProducto/?idp=${idp}`
   );
 
-export const makePetition = (correo) =>
+export const makePetition = (correo, numero, direccion) =>
   axios.post(
     "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/pedido/agregar_pedido/",
     {
       correo: correo,
+      numero: numero,
+      direccion: direccion,
+      pickup: false
     }
   );
 
@@ -88,5 +91,6 @@ export const postNumeros = (correo) =>
     "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/telefono/agregar_telefono/",
     {
       correo: correo,
+      
     }
   );

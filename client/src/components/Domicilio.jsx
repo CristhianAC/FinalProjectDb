@@ -36,7 +36,7 @@ function Domicilio({ session }) {
       }
     }
     setSolicitado(true);
-    if(!domicilio){
+    if(!domicilio.productos){
       window.location.reload();
     }
   };

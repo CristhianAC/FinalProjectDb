@@ -81,7 +81,7 @@ export const makePetition = (correo, numero, direccion) =>
 
 export const getNumeros = async (correo) => {
   const response = await axios.get(
-    "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/telefono/pedir_telefono/?correo=" +
+    "https://quillas-bakery-cristhianac-5656dd75.koyeb.app/api/telefono/get_telefono/?correo=" +
       correo
   );
   return response.data;

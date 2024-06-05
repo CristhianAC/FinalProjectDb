@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { makePetition, getNumeros } from "./API/Conexion-api";
 import Autocomplete from "./Servicios/AutoComplete";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 
 const CartItems = ({ carrito, session }) => {
   const cartItems = carrito || [];
@@ -41,10 +44,12 @@ const CartItems = ({ carrito, session }) => {
 
   const makeAPayment = async () => {
     await makePetition(session?.user?.email, inputValue, address);
+    toast.success("Pedido realizado con éxito");
   };
 
   return (
     <div className="flex flex-col items-center space-y-20">
+      <ToastContainer position="bottom-right" />
       {cartItems.length > 0 ? (
         cartItems.map((item, index) => {
           const product = item.product || {};
@@ -81,7 +86,9 @@ const CartItems = ({ carrito, session }) => {
           );
         })
       ) : (
-        <p className="text-red-600 font-semibold">No hay productos en el carrito</p>
+        <p className="text-red-600 font-semibold">
+          No hay productos en el carrito
+        </p>
       )}
       {cartItems.length > 0 && (
         <div className="flex flex-row items-center justify-center space-x-11">
@@ -102,12 +109,14 @@ const CartItems = ({ carrito, session }) => {
               ))}
             </datalist>
           </div>
-          <button
-            className="btn bg-blue-600 text-white rounded-lg p-2 justify-center items-center"
-            onClick={makeAPayment}
-          >
-            Comprar
-          </button>
+          <Link to="/productos">
+            <button
+              className="btn bg-blue-600 text-white rounded-lg p-2 justify-center items-center"
+              onClick={makeAPayment}
+            >
+              Comprar
+            </button>
+          </Link>
         </div>
       )}
     </div>

@@ -97,7 +97,6 @@ class pedidoViewSet(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
     @action(detail=False, methods=['post'])
     def agregar_pedido(self, request):
-        #Si no hay repartidor en cola, que sea null
         correo_cliente = request.data.get('correo')
         numero = request.data.get('numero')
         direccion = request.data.get('direccion')
@@ -107,8 +106,7 @@ class pedidoViewSet(viewsets.ModelViewSet):
         direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         carrito_cliente.comprado = True
-        if pickup == 'True' :
-            #Condicional de si el idr ya esta en entrega, si esta que no haga nada
+        if pickup == 'False':
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
             colarepartidora = colarepartidor.objects.first()
             if colarepartidora is None:
@@ -217,14 +215,10 @@ class repartidorViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_200_OK)
         else: 
             repartidora.activo = True
-            if pedido.objects.filter(pickup=True, entregado=False).exists():
-                if not entrega.objects.filter(idr=None).exists():
-                    entrega.objects.filter(idr=None).first().idr = repartidora
-                else:
-                    pedidoa = pedido.objects.filter(pickup=True, entregado=False)
-                    pedidoa = pedido.objects.exclude(idpedido__in=entrega.objects.values('idpedido')).first() 
-                    direccion = direccionentrega.objects.filter(idc=pedidoa.idc).first()
-                    entrega.objects.create(idc=pedidoa.idc, idpedido = pedidoa, direccion = direccion, idr = repartidora)
+            if entrega.objects.filter(idr = None).exists():
+                a = entrega.objects.filter(idr=None).first() 
+                a.idr = repartidora
+                a.save()
             else:
                 colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
                 if colarepartidor_mayor is None:
@@ -233,6 +227,13 @@ class repartidorViewSet(viewsets.ModelViewSet):
                     colarepartidor.objects.create(idr=repartidora, n=int(colarepartidor_mayor.n)+1)
                 repartidora.save()
             return Response(status=status.HTTP_200_OK)
+    @action(detail=False, methods=['get'])
+    def get_pedido(self, request):
+        correo = request.query_params['correo']
+        repartidora = get_object_or_404(repartidor, correo=correo)
+        pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False)
+        serializer = EntregaSerializer(pedidos, many=True)
+        return Response(serializer.data)
 class entregaViewSet(viewsets.ModelViewSet):
     queryset = entrega.objects.all()
     permission_classes = [

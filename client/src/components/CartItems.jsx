@@ -127,6 +127,7 @@ const CartItems = ({ carrito, session }) => {
                 className="border rounded-lg p-2 text-black"
                 type="text"
                 placeholder="Teléfono"
+                required
               />
               <datalist id="phone-options">
                 {filteredOptions.map((option, index) => (
@@ -142,6 +143,7 @@ const CartItems = ({ carrito, session }) => {
                 checked={checked}
                 onChange={() => setChecked(!checked)}
                 className="h-6 w-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 focus:outline-none"
+                required
               />
               <label htmlFor="pickup" className="text-gray-700 font-medium">
                 Recoger en tienda

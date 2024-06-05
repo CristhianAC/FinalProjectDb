@@ -32,6 +32,9 @@ class PedidosEnPeriodoAdmin(admin.ModelAdmin):
     list_display = ['fechainicio','fechafin','cantidadp']
     ordering = ['-cantidadp']
 
+
+
 admin.site.register(colarepartidor)
 # Register your models here.
 
+admin.site.register(entrega)

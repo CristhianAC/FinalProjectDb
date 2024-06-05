@@ -233,9 +233,14 @@ class repartidorViewSet(viewsets.ModelViewSet):
     def get_pedido(self, request):
         correo = request.query_params['correo']
         repartidora = get_object_or_404(repartidor, correo=correo)
-        pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False)
-        serializer = EntregaSerializer(pedidos, many=True)
-        return Response(serializer.data)
+        pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False).first()
+        idpedidoa = pedido.objects.filter(idpedido=pedidos.idpedido.idpedido).first()
+        carritoa = carrito.objects.filter(idcarrito=idpedidoa.idcarrito.idcarrito).first()
+        #productosa = carritoproducto.objects.filter(carrito=carritoa.idcarrito)
+        #productosa = producto.objects.filter(idp__in=productosa.values_list('producto', flat=True))
+        serializer = CarritoSerializer(carritoa)
+        print(pedidos.direccion.direccion)
+        return Response({'productos':serializer.data['productos'], 'direccion':pedidos.direccion.direccion})  # Replace 'carritoa' with 'serializer.data['productos']'
     @action(detail=False, methods=['get'])
     def verif_repartidor(self, request):
         correo = request.query_params['correo']

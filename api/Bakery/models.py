@@ -53,6 +53,7 @@ class repartidor(models.Model):
     vehiculo = models.CharField(max_length=100)
     licencia = models.CharField(max_length=100, null=True, blank=True)
     fechavencimiento = models.DateField(null=True, blank=True)
+    ocupado = models.BooleanField(default=False)
     def save(self, *args, **kwargs):
         if self.password is not None and self.password != '':
             self.password = make_password(self.password)

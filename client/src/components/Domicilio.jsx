@@ -36,6 +36,9 @@ function Domicilio({ session }) {
       }
     }
     setSolicitado(true);
+    if(!domicilio){
+      window.location.reload();
+    }
   };
   const handleEntregado = async () => {
     try {

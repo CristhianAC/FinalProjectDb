@@ -107,16 +107,16 @@ class pedidoViewSet(viewsets.ModelViewSet):
         direccion, created = direccionentrega.objects.get_or_create(idc=clientea, direccion=direccion)
         carrito_cliente = carrito.objects.filter(cliente=clientea.idc, comprado=False).first()
         carrito_cliente.comprado = True
-        if pickup == 'True':
+        if pickup == 'True' :
+            #Condicional de si el idr ya esta en entrega, si esta que no haga nada
             pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente, pickup = pickup)
             colarepartidora = colarepartidor.objects.first()
-            repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
             if colarepartidora is None:
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
             else:
+                repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = repartidora)
                 colarepartidora.delete()
-                print(colarepartidora)
             pedidoa.save()
         else:
             pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
@@ -218,11 +218,13 @@ class repartidorViewSet(viewsets.ModelViewSet):
         else: 
             repartidora.activo = True
             if pedido.objects.filter(pickup=True, entregado=False).exists():
-                pedidoa = pedido.objects.filter(pickup=True, entregado=False)
-                pedidoa = pedido.objects.exclude(idpedido__in=entrega.objects.values('idpedido')).first() 
-
-                direccion = direccionentrega.objects.filter(idc=pedidoa.idc).first()
-                entrega.objects.create(idc=pedidoa.idc, idpedido = pedidoa, direccion = direccion, idr = repartidora)
+                if not entrega.objects.filter(idr=None).exists():
+                    entrega.objects.filter(idr=None).first().idr = repartidora
+                else:
+                    pedidoa = pedido.objects.filter(pickup=True, entregado=False)
+                    pedidoa = pedido.objects.exclude(idpedido__in=entrega.objects.values('idpedido')).first() 
+                    direccion = direccionentrega.objects.filter(idc=pedidoa.idc).first()
+                    entrega.objects.create(idc=pedidoa.idc, idpedido = pedidoa, direccion = direccion, idr = repartidora)
             else:
                 colarepartidor_mayor = colarepartidor.objects.order_by('-n').first()
                 if colarepartidor_mayor is None:

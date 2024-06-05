@@ -38,7 +38,7 @@ const ShoppingC = ({ session }) => {
             <span>Productos</span>
           </Link>
         </button>
-        <h2 className="text-2xl font-bold">Carrito</h2>
+        <h2 className="text-2xl font-bold text-[#310e11]">Carrito</h2>
       </div>
       <div>
         <CartItems carrito={shoppingCart} session={session}/>

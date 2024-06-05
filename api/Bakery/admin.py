@@ -21,8 +21,17 @@ class ProductoMasVendidoAdmin(admin.ModelAdmin):
     list_display = ['productotendencia', 'cantidadt']
     
     ordering = ['-cantidadt']
-    
-admin.site.register(colarepartidor)
 
+@admin.register(pedidos_por_dia)
+class PedidosPorDiaAdmin(admin.ModelAdmin):
+    list_display = ['dia', 'cantidadp']
+    ordering = ['-cantidadp']
+
+@admin.register(pedidosperiodo)
+class PedidosEnPeriodoAdmin(admin.ModelAdmin):
+    list_display = ['fechainicio','fechafin','cantidadp']
+    ordering = ['-cantidadp']
+
+admin.site.register(colarepartidor)
 # Register your models here.
 

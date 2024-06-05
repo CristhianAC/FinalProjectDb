@@ -94,4 +94,12 @@ class producto_mas_vendido(models.Model):
     cantidadt = models.PositiveIntegerField(default=0)
     def __str__(self) -> str:
         return str(self.productotendencia.nomproducto)
-    
+class pedidos_por_dia(models.Model):
+    dia = models.DateField(unique=True)
+    cantidadp = models.IntegerField(default=0)
+class pedidosperiodo(models.Model):
+    fechainicio = models.DateField()
+    fechafin = models.DateField()
+    cantidadp = models.IntegerField(default=0)
+    class Meta:
+        unique_together = ('fechainicio', 'fechafin')

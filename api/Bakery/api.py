@@ -112,10 +112,8 @@ class pedidoViewSet(viewsets.ModelViewSet):
             colarepartidora = colarepartidor.objects.first()
             repartidora = repartidor.objects.filter(idr=colarepartidora.idr.idr).first()
             if colarepartidora is None:
-                print("hola2")
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = None)
             else:
-                print("hola")
                 entrega.objects.create(idc=clientea, idpedido = pedidoa, direccion = direccion, idr = repartidora)
                 colarepartidora.delete()
                 print(colarepartidora)
@@ -215,11 +213,14 @@ class repartidorViewSet(viewsets.ModelViewSet):
         repartidora = get_object_or_404(repartidor, correo=correo)
         if repartidora.activo:
             repartidora.activo = False
+            repartidora.save()
             return Response(status=status.HTTP_200_OK)
         else: 
             repartidora.activo = True
             if pedido.objects.filter(pickup=True, entregado=False).exists():
-                pedidoa = pedido.objects.filter(pickup=True, entregado=False).first()
+                pedidoa = pedido.objects.filter(pickup=True, entregado=False)
+                pedidoa = pedido.objects.exclude(idpedido__in=entrega.objects.values('idpedido')).first() 
+
                 direccion = direccionentrega.objects.filter(idc=pedidoa.idc).first()
                 entrega.objects.create(idc=pedidoa.idc, idpedido = pedidoa, direccion = direccion, idr = repartidora)
             else:

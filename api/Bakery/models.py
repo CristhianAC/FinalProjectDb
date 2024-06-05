@@ -84,6 +84,7 @@ class pedido(models.Model):
     fechainicio = models.DateTimeField(auto_now_add=True)
     fechafin = models.DateTimeField(null = True, blank = True)
     pickup = models.BooleanField(default=True)
+    total = models.FloatField(default=0, null=True, blank=True)
 class entrega(models.Model):
     idc = models.ForeignKey(cliente, on_delete=models.CASCADE)
     idpedido = models.ForeignKey(pedido, on_delete=models.CASCADE)

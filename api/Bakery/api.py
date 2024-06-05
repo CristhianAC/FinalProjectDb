@@ -119,7 +119,21 @@ class pedidoViewSet(viewsets.ModelViewSet):
                 colarepartidora.delete()
             pedidoa.save()
         else:
-            pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+            pedidoa = pedido.objects.create(idc=clientea, idcarrito=carrito_cliente)
+        serializer = CarritoSerializer(carrito_cliente)
+        serializer = serializer.data['productos']
+        serializer = [(item['producto'], item['cantidad']) for item in serializer]
+        precios = {}
+        for producto_id, cantidad in serializer:
+            productoa = producto.objects.get(idp=producto_id)
+            total = productoa.precio * cantidad
+            precios[productoa.nomproducto] = {
+            'precio': productoa.precio,
+            'cantidad': cantidad,
+            'total': total
+            }
+        pedidoa.total = sum(precios[item]['total'] for item in precios)
+        pedidoa.save()
         carrito_cliente.save()
         return Response(status=status.HTTP_200_OK)
     @action(detail=False, methods=['put'])
@@ -137,6 +151,7 @@ class pedidoViewSet(viewsets.ModelViewSet):
         pedido = get_object_or_404(pedido, idpedido=idpedido)
         pedido.delete()
         return Response(status=status.HTTP_200_OK)
+    
 class telefonoViewSet(viewsets.ModelViewSet):
     queryset = telefono.objects.all()
     permission_classes = [
@@ -236,11 +251,19 @@ class repartidorViewSet(viewsets.ModelViewSet):
         pedidos = entrega.objects.filter(idr=repartidora, idpedido__entregado=False).first()
         idpedidoa = pedido.objects.filter(idpedido=pedidos.idpedido.idpedido).first()
         carritoa = carrito.objects.filter(idcarrito=idpedidoa.idcarrito.idcarrito).first()
-        #productosa = carritoproducto.objects.filter(carrito=carritoa.idcarrito)
-        #productosa = producto.objects.filter(idp__in=productosa.values_list('producto', flat=True))
         serializer = CarritoSerializer(carritoa)
-        print(pedidos.direccion.direccion)
-        return Response({'productos':serializer.data['productos'], 'direccion':pedidos.direccion.direccion})  # Replace 'carritoa' with 'serializer.data['productos']'
+        a = serializer.data['productos']
+        a = [(item['producto'], item['cantidad']) for item in a]
+        precios = {}
+        for producto_id, cantidad in a:
+            productoa = producto.objects.get(idp=producto_id)
+            total = productoa.precio * cantidad
+            precios[productoa.nomproducto] = {
+            'precio': productoa.precio,
+            'cantidad': cantidad,
+            'total': total
+            }
+        return Response({'productos':precios, 'direccion':pedidos.direccion.direccion, 'total':idpedidoa.total})  # Replace 'carritoa' with 'serializer.data['productos']'
     @action(detail=False, methods=['get'])
     def verif_repartidor(self, request):
         correo = request.query_params['correo']
